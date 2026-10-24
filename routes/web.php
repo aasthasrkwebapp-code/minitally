@@ -38,6 +38,7 @@ Route::middleware('auth')->group(function () {
     Route::get('billing', [BillingController::class, 'index'])->name('billing.index');
     Route::post('billing/generate', [BillingController::class, 'generate'])->name('billing.generate');
     Route::post('billing/email-all', [BillingController::class, 'emailAll'])->name('billing.email-all');
+    Route::post('billing/send-all', [BillingController::class, 'sendAll'])->name('billing.send-all');
     Route::get('billing/whatsapp', [BillingController::class, 'whatsappQueue'])->name('billing.whatsapp');
     Route::post('billing/whatsapp-all', [BillingController::class, 'whatsappAll'])->name('billing.whatsapp-all');
 
@@ -46,6 +47,7 @@ Route::middleware('auth')->group(function () {
     Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'pdf'])->name('invoices.pdf');
     Route::post('invoices/{invoice}/email', [InvoiceController::class, 'email'])->name('invoices.email');
     Route::get('invoices/{invoice}/whatsapp', [InvoiceController::class, 'whatsapp'])->name('invoices.whatsapp');
+    Route::post('invoices/{invoice}/send', [InvoiceController::class, 'send'])->name('invoices.send');
     Route::delete('invoices/{invoice}', [InvoiceController::class, 'destroy'])->name('invoices.destroy');
 
     Route::resource('payments', PaymentController::class)->only(['index', 'create', 'store', 'destroy']);
@@ -61,6 +63,7 @@ Route::middleware('auth')->group(function () {
     Route::get('outstanding', [OutstandingController::class, 'index'])->name('outstanding.index');
     Route::post('outstanding/{client}/email', [OutstandingController::class, 'email'])->name('outstanding.email');
     Route::get('outstanding/{client}/whatsapp', [OutstandingController::class, 'whatsapp'])->name('outstanding.whatsapp');
+    Route::post('outstanding/{client}/send', [OutstandingController::class, 'send'])->name('outstanding.send');
     Route::post('outstanding/email-all', [OutstandingController::class, 'emailAll'])->name('outstanding.email-all');
 
     Route::get('settings', [SettingController::class, 'edit'])->name('settings.edit');

@@ -22,12 +22,13 @@
                     </div>
                     <div class="flex items-center justify-between gap-3 md:justify-end">
                         <span class="text-base font-semibold text-red-600">₹{{ N::money($r->due) }}</span>
-                        <div class="flex gap-1.5">
+                        <div class="flex flex-wrap justify-end gap-1.5">
+                            <form method="POST" action="{{ route('outstanding.send', $r->client) }}" target="_blank">@csrf<button class="btn btn-primary btn-sm" data-wa-sent><x-icon name="send" class="size-4" />Remind both</button></form>
                             <form method="POST" action="{{ route('outstanding.email', $r->client) }}">@csrf
                                 <button class="btn btn-secondary btn-sm" @disabled(!$r->client->email) data-busy="..."><x-icon name="mail" class="size-4" />Email</button>
                             </form>
                             @if ($r->client->whatsapp)
-                                <a href="{{ route('outstanding.whatsapp', $r->client) }}" target="_blank" class="btn btn-whatsapp btn-sm" data-wa-sent><x-icon name="chat" class="size-4" />WhatsApp</a>
+                                <a href="{{ route('outstanding.whatsapp', $r->client) }}" target="_blank" class="btn btn-secondary btn-sm" data-wa-sent><x-icon name="chat" class="size-4" />WhatsApp</a>
                             @endif
                             <a href="{{ route('payments.create', ['client_id' => $r->client->id]) }}" class="btn btn-secondary btn-sm">Paid</a>
                         </div>

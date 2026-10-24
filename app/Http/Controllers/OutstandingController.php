@@ -46,6 +46,31 @@ class OutstandingController extends Controller
         return $url ? redirect()->away($url) : back()->with('ok', "Reminder sent to {$client->name} on WhatsApp.");
     }
 
+    /** Email reminder (with pending bills) and WhatsApp reminder in one tap. */
+    public function send(Client $client, BillSender $sender)
+    {
+        $failed = [];
+        if ($client->email) {
+            try {
+                $sender->emailReminder($client);
+            } catch (\Throwable $e) {
+                $failed[] = 'Email: '.$e->getMessage();
+            }
+        }
+        $url = null;
+        if ($client->whatsapp) {
+            try {
+                $url = $sender->whatsappReminder($client);
+            } catch (\Throwable $e) {
+                $failed[] = 'WhatsApp: '.$e->getMessage();
+            }
+        }
+        session()->flash('ok', "Reminder sent to {$client->name}.");
+        session()->flash('errors_list', $failed);
+
+        return $url ? redirect()->away($url) : back();
+    }
+
     public function emailAll(BillSender $sender)
     {
         @set_time_limit(0);

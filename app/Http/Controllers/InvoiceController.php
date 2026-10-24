@@ -62,6 +62,40 @@ class InvoiceController extends Controller
         return $url ? redirect()->away($url) : back()->with('ok', "Bill {$invoice->number} sent on WhatsApp.");
     }
 
+    /** Email the bill (with PDF) and then open / send it on WhatsApp, in one tap. */
+    public function send(Invoice $invoice, BillSender $sender)
+    {
+        $done = [];
+        $failed = [];
+        if ($invoice->client->email) {
+            try {
+                $sender->emailBill($invoice);
+                $done[] = 'emailed';
+            } catch (\Throwable $e) {
+                $failed[] = 'Email: '.$e->getMessage();
+            }
+        } else {
+            $failed[] = 'No email address for '.$invoice->client->name;
+        }
+
+        $url = null;
+        if ($invoice->client->whatsapp) {
+            try {
+                $url = $sender->whatsappBill($invoice);
+                $done[] = $url ? 'WhatsApp opened' : 'sent on WhatsApp';
+            } catch (\Throwable $e) {
+                $failed[] = 'WhatsApp: '.$e->getMessage();
+            }
+        } else {
+            $failed[] = 'No WhatsApp number for '.$invoice->client->name;
+        }
+
+        session()->flash('ok', "Bill {$invoice->number}: ".($done ? implode(' and ', $done) : 'nothing sent').'.');
+        session()->flash('errors_list', $failed);
+
+        return $url ? redirect()->away($url) : back();
+    }
+
     /** Deleting a bill releases its entries so they can be billed again. */
     public function destroy(Invoice $invoice)
     {

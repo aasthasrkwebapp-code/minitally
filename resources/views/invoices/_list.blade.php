@@ -14,10 +14,13 @@
                     <div class="text-sm font-semibold">₹{{ N::money($inv->total) }}</div>
                     <x-status :status="$inv->status" />
                 </div>
-                <div class="flex gap-1.5">
+                <div class="flex flex-wrap justify-end gap-1.5">
+                    @if (! $inv->emailed_at || ! $inv->whatsapp_at)
+                        <form method="POST" action="{{ route('invoices.send', $inv) }}" target="_blank">@csrf<button class="btn btn-primary btn-sm" title="Email the PDF and open WhatsApp"><x-icon name="send" class="size-4" />Send both</button></form>
+                    @endif
                     <a href="{{ route('invoices.pdf', $inv) }}" target="_blank" class="btn btn-secondary btn-sm" title="View PDF"><x-icon name="eye" class="size-4" /><span class="hidden xl:inline">PDF</span></a>
                     <form method="POST" action="{{ route('invoices.email', $inv) }}">@csrf
-                        <button class="btn btn-sm {{ $inv->emailed_at ? 'btn-secondary' : 'btn-primary' }}" title="{{ $inv->emailed_at ? 'Emailed '.$inv->emailed_at->format('d M H:i') : 'Send email' }}" data-busy="...">
+                        <button class="btn btn-sm btn-secondary" title="{{ $inv->emailed_at ? 'Emailed '.$inv->emailed_at->format('d M H:i') : 'Send email' }}" data-busy="...">
                             @if ($inv->emailed_at)<x-icon name="check" class="size-4" />@else<x-icon name="mail" class="size-4" />@endif<span class="hidden sm:inline">Email</span>
                         </button>
                     </form>

@@ -369,4 +369,44 @@ class BillingFlowTest extends TestCase
         app(InvoiceService::class)->generateForMonth(self::MONTH);
         $this->assertSame('NN/26-27/0001', Invoice::first()->number);
     }
+
+    public function test_one_tap_sends_bill_on_email_and_whatsapp(): void
+    {
+        Mail::fake();
+        $this->importSample();
+        app(InvoiceService::class)->generateForMonth(self::MONTH);
+        $invoice = Invoice::whereHas('client', fn ($q) => $q->where('name', 'Exporter Adda'))->first();
+
+        $response = $this->post(route('invoices.send', $invoice));
+        $this->assertStringStartsWith('https://wa.me/918114414800?text=', $response->headers->get('Location'));
+        Mail::assertSent(InvoiceMail::class, fn ($m) => $m->invoice->is($invoice) && $m->hasTo('exporteradda@gmail.com'));
+        $invoice->refresh();
+        $this->assertNotNull($invoice->emailed_at);
+        $this->assertNotNull($invoice->whatsapp_at);
+
+        $reminder = $this->post(route('outstanding.send', $invoice->client));
+        $this->assertStringStartsWith('https://wa.me/918114414800?text=', $reminder->headers->get('Location'));
+        Mail::assertSent(ReminderMail::class, 1);
+    }
+
+    public function test_send_all_emails_every_bill_then_opens_whatsapp_list(): void
+    {
+        Mail::fake();
+        $this->importSample();
+        app(InvoiceService::class)->generateForMonth(self::MONTH);
+
+        $this->post(route('billing.send-all'), ['month' => self::MONTH])
+            ->assertRedirect(route('billing.whatsapp', ['month' => self::MONTH]));
+        Mail::assertSent(InvoiceMail::class, Invoice::count());
+
+        // With the WhatsApp Business API, both go out automatically
+        config(['services.whatsapp.token' => 't', 'services.whatsapp.phone_number_id' => '1']);
+        Setting::put('whatsapp_mode', 'cloud');
+        Http::fake(['graph.facebook.com/*' => Http::response(['messages' => [['id' => 'x']]])]);
+        Invoice::query()->update(['emailed_at' => null, 'whatsapp_at' => null]);
+
+        $this->post(route('billing.send-all'), ['month' => self::MONTH])->assertRedirect(route('billing.index', ['month' => self::MONTH]));
+        Http::assertSentCount(Invoice::whereHas('client', fn ($q) => $q->whereNotNull('whatsapp'))->count());
+        $this->assertSame(0, Invoice::whereNull('emailed_at')->count());
+    }
 }

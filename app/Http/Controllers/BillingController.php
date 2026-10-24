@@ -58,6 +58,45 @@ class BillingController extends Controller
             ->with('errors_list', $failed);
     }
 
+    /**
+     * One button for month end: email every unsent bill, send WhatsApp automatically when the
+     * Business API is set up, otherwise open the WhatsApp list to send each one with a tap.
+     */
+    public function sendAll(Request $request, BillSender $sender, WhatsAppService $whatsapp)
+    {
+        $data = $request->validate(['month' => ['required', 'date_format:Y-m']]);
+        @set_time_limit(0);
+
+        [$emailed, $whatsapped, $failed] = [0, 0, []];
+        foreach (Invoice::with('client')->where('period', $data['month'])->get() as $invoice) {
+            if (! $invoice->emailed_at && $invoice->client->email) {
+                try {
+                    $sender->emailBill($invoice);
+                    $emailed++;
+                } catch (\Throwable $e) {
+                    $failed[] = $invoice->client->name.' (email): '.$e->getMessage();
+                }
+            }
+            if ($whatsapp->mode() === 'cloud' && ! $invoice->whatsapp_at && $invoice->client->whatsapp) {
+                try {
+                    $sender->whatsappBill($invoice);
+                    $whatsapped++;
+                } catch (\Throwable $e) {
+                    $failed[] = $invoice->client->name.' (WhatsApp): '.$e->getMessage();
+                }
+            }
+        }
+
+        if ($whatsapp->mode() === 'cloud') {
+            return redirect()->route('billing.index', ['month' => $data['month']])
+                ->with('ok', "$emailed bill(s) emailed and $whatsapped sent on WhatsApp.")->with('errors_list', $failed);
+        }
+
+        return redirect()->route('billing.whatsapp', ['month' => $data['month']])
+            ->with('ok', "$emailed bill(s) emailed. Now tap Send for each client below to send it on WhatsApp.")
+            ->with('errors_list', $failed);
+    }
+
     public function whatsappQueue(Request $request, WhatsAppService $whatsapp)
     {
         $month = $request->input('month', now()->format('Y-m'));

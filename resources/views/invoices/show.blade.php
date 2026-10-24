@@ -3,7 +3,8 @@
     <x-page-header :title="'Bill '.$invoice->number" :subtitle="$invoice->client->name.' · '.$invoice->periodLabel()">
         <a href="{{ route('invoices.pdf', $invoice) }}" target="_blank" class="btn btn-secondary"><x-icon name="eye" class="size-4" />View PDF</a>
         <a href="{{ route('invoices.pdf', [$invoice, 'download' => 1]) }}" class="btn btn-secondary"><x-icon name="download" class="size-4" />Download</a>
-        <form method="POST" action="{{ route('invoices.email', $invoice) }}">@csrf<button class="btn btn-primary" data-busy="Sending..."><x-icon name="mail" class="size-4" />{{ $invoice->emailed_at ? 'Email again' : 'Email' }}</button></form>
+        <form method="POST" action="{{ route('invoices.send', $invoice) }}" target="_blank">@csrf<button class="btn btn-primary"><x-icon name="send" class="size-4" />Send email + WhatsApp</button></form>
+        <form method="POST" action="{{ route('invoices.email', $invoice) }}">@csrf<button class="btn btn-secondary" data-busy="Sending..."><x-icon name="mail" class="size-4" />{{ $invoice->emailed_at ? 'Email again' : 'Email' }}</button></form>
         <a href="{{ route('invoices.whatsapp', $invoice) }}" target="_blank" class="btn btn-whatsapp"><x-icon name="chat" class="size-4" />WhatsApp</a>
     </x-page-header>
 

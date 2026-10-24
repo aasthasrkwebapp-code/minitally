@@ -52,11 +52,15 @@
             </div>
             @if ($invoices->isNotEmpty())
             <div class="flex flex-wrap gap-2">
+                <form method="POST" action="{{ route('billing.send-all') }}" data-confirm="Send every unsent bill of {{ $label }} by email and WhatsApp?">
+                    @csrf <input type="hidden" name="month" value="{{ $month }}">
+                    <button class="btn btn-primary" data-busy="Sending..."><x-icon name="send" class="size-4" />Send all (Email + WhatsApp)</button>
+                </form>
                 <form method="POST" action="{{ route('billing.email-all') }}" data-confirm="Email every bill of {{ $label }} that has not been emailed yet?">
                     @csrf <input type="hidden" name="month" value="{{ $month }}">
-                    <button class="btn btn-primary" data-busy="Sending emails..."><x-icon name="mail" class="size-4" />Email all unsent</button>
+                    <button class="btn btn-secondary" data-busy="Sending emails..."><x-icon name="mail" class="size-4" />Email only</button>
                 </form>
-                <a href="{{ route('billing.whatsapp', ['month' => $month]) }}" class="btn btn-whatsapp"><x-icon name="chat" class="size-4" />WhatsApp all</a>
+                <a href="{{ route('billing.whatsapp', ['month' => $month]) }}" class="btn btn-secondary"><x-icon name="chat" class="size-4" />WhatsApp only</a>
             </div>
             @endif
         </div>
