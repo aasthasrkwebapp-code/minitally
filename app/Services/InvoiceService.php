@@ -125,7 +125,7 @@ class InvoiceService
         return Pdf::loadView('pdf.invoice', [
             'invoice' => $invoice,
             's' => Setting::allWithDefaults(),
-        ])->setPaper('a4');
+        ])->setPaper('a4')->setOption('isFontSubsettingEnabled', true);
     }
 
     public function pdfContent(Invoice $invoice): string
