@@ -26,7 +26,7 @@ class SettingController extends Controller
         $rules['invoice_next_number'] = ['nullable', 'integer', 'min:1'];
         $rules['due_days'] = ['nullable', 'integer', 'min:0'];
         $rules['auto_month_end_day'] = ['nullable', 'integer', 'min:1', 'max:28'];
-        $rules['whatsapp_mode'] = ['nullable', 'in:link,cloud'];
+        $rules['whatsapp_mode'] = ['nullable', 'in:auto,link,cloud'];
         $rules['bill_to'] = ['nullable', 'in:party,mail_by,manual'];
         $data = $request->validate($rules);
 

@@ -14,9 +14,10 @@ use RuntimeException;
  */
 class WhatsAppService
 {
+    /** Automatic as soon as the API keys are in .env, unless the owner chose "link" in Settings. */
     public function mode(): string
     {
-        return Setting::get('whatsapp_mode') === 'cloud' && $this->cloudConfigured() ? 'cloud' : 'link';
+        return Setting::get('whatsapp_mode') !== 'link' && $this->cloudConfigured() ? 'cloud' : 'link';
     }
 
     public function cloudConfigured(): bool

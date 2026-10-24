@@ -26,7 +26,7 @@ class Setting extends Model
         'invoice_prefix' => 'RC',
         'invoice_next_number' => '1',
         'due_days' => '7',
-        'whatsapp_mode' => 'link', // link or cloud
+        'whatsapp_mode' => 'auto', // auto (API when keys are set, else link) or link
         'auto_month_end' => '0',
         'auto_month_end_day' => '1',
         'auto_reminders' => '0',

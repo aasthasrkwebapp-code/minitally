@@ -32,7 +32,7 @@ Who a bill goes to is a setting: **Party name** (default), **Mail by**, or **cho
    Edit `.env`:
    - `APP_ENV=production`, `APP_DEBUG=false`, `APP_URL=https://your-domain`
    - `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` from step 1
-   - Mail: for Gmail, turn on 2-step verification on the Gmail account, create an **App Password** (Google Account → Security → App passwords) and put it in `MAIL_PASSWORD`. Keep `MAIL_USERNAME` and `MAIL_FROM_ADDRESS` as that Gmail address.
+   - Email and WhatsApp keys: see **Keys to fill in** below.
    - Login user: `ADMIN_EMAIL` and `ADMIN_PASSWORD`
 5. **Create the tables and the login user:**
    ```bash
@@ -58,13 +58,46 @@ Optional dummy data (8 clients, 50 entries for this month): `php artisan db:seed
 3. When payments come in: **Bank statement → upload → check matches → Save payments**.
 4. **Outstanding → Email reminder to all**, and WhatsApp the ones that matter.
 
-## WhatsApp
+## Keys to fill in (`.env`)
 
-- **Link mode (default, free):** each Send button opens WhatsApp (phone or WhatsApp Web) with the message and the bill link typed in. You press send.
-- **Automatic mode:** needs a WhatsApp Business Cloud API number from Meta and two approved message templates:
-  - `monthly_bill`: header = Document, body with 4 variables: `{{1}}` client, `{{2}}` bill no., `{{3}}` month, `{{4}}` amount.
-  - `payment_reminder`: body with 3 variables: `{{1}}` client, `{{2}}` amount due, `{{3}}` pending bills.
-  Put `WHATSAPP_TOKEN` and `WHATSAPP_PHONE_NUMBER_ID` in `.env`, then pick "WhatsApp Business API" in Settings.
+Email and WhatsApp are already wired up. Only these values are needed; after editing `.env` on the server run `php artisan config:cache`.
+
+**Email (Gmail SMTP)**
+
+| Key | Value |
+|---|---|
+| `MAIL_MAILER` | `smtp` |
+| `MAIL_HOST` | `smtp.gmail.com` |
+| `MAIL_PORT` | `587` |
+| `MAIL_USERNAME` | the Gmail address, e.g. `exporteradda@gmail.com` |
+| `MAIL_PASSWORD` | the 16-letter **App Password** (Google Account → Security → 2-Step Verification on → App passwords), no spaces |
+| `MAIL_FROM_ADDRESS` | same Gmail address |
+| `MAIL_FROM_NAME` | `"RAHUL CHANDAK"` |
+
+Check it with **Settings → Send a test email**.
+
+**WhatsApp Business Cloud API (Meta)**
+
+| Key | Where to find it |
+|---|---|
+| `WHATSAPP_TOKEN` | Meta Business Suite → Business settings → System users → generate a **permanent** token with `whatsapp_business_messaging` permission |
+| `WHATSAPP_PHONE_NUMBER_ID` | developers.facebook.com → your app → WhatsApp → API Setup → *Phone number ID* (not the phone number itself) |
+| `WHATSAPP_BILL_TEMPLATE` | `monthly_bill` (or the name you approved) |
+| `WHATSAPP_REMINDER_TEMPLATE` | `payment_reminder` |
+| `WHATSAPP_TEMPLATE_LANGUAGE` | the template's language code, e.g. `en` or `en_US` |
+
+Create these two message templates in WhatsApp Manager (category *Utility*) and wait for approval:
+
+- `monthly_bill`: Header = **Document**. Body, for example: `Dear {{1}}, your bill {{2}} for {{3}} is Rs. {{4}}. The PDF is attached. Thank you.`
+- `payment_reminder`: Body, for example: `Dear {{1}}, Rs. {{2}} is outstanding against your account. Pending bills: {{3}}. Kindly clear it at the earliest.`
+
+`APP_URL` must be your real https address, because Meta downloads the bill PDF from it.
+
+As soon as `WHATSAPP_TOKEN` and `WHATSAPP_PHONE_NUMBER_ID` are set, bills and reminders are sent on WhatsApp automatically (with the PDF). Without them, the site opens WhatsApp with the message and bill link ready and you press send. Settings → WhatsApp can force the link mode. If Meta refuses a message, the reason is shown on screen.
+
+## Database file
+
+Instead of `php artisan migrate --seed` you can import `minitally-database.sql` (tables + login user) in phpMyAdmin: select your database → Import → choose the file → Go. `minitally-database-with-50-demo-entries.sql` also has 8 dummy clients and 50 entries for trying things out.
 
 ## Development
 
@@ -74,5 +107,5 @@ cp .env.example .env && php artisan key:generate
 php artisan migrate --seed
 npm run build        # rebuild public/build after changing CSS/JS or Blade classes, and commit it
 php artisan serve
-php artisan test     # 29 tests: amounts in words, Excel/bank parsing, billing, email, WhatsApp, bank matching, reminders, scheduler
+php artisan test     # 33 tests: amounts in words, Excel/bank parsing, billing, email, WhatsApp, bank matching, reminders, scheduler
 ```

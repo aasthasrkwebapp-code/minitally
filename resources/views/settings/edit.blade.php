@@ -61,12 +61,15 @@ $groups = [
             <h2 class="mb-4 font-semibold">WhatsApp</h2>
             <div class="grid gap-3 sm:grid-cols-2">
                 <label class="flex cursor-pointer gap-3 rounded-lg border border-slate-200 p-3 has-[:checked]:border-brand-500 has-[:checked]:bg-brand-50">
-                    <input type="radio" name="whatsapp_mode" value="link" @checked($s['whatsapp_mode'] !== 'cloud') class="mt-0.5">
-                    <span><span class="block text-sm font-medium">WhatsApp link (free)</span><span class="block text-xs text-slate-500">Opens WhatsApp with the message typed in; you press send. Works with your normal WhatsApp.</span></span>
+                    <input type="radio" name="whatsapp_mode" value="auto" @checked($s['whatsapp_mode'] !== 'link') class="mt-0.5">
+                    <span><span class="block text-sm font-medium">Automatic when connected (recommended)</span><span class="block text-xs text-slate-500">
+                        @if ($cloudReady) <span class="font-medium text-emerald-700">WhatsApp Business API is connected.</span> Bills and reminders are sent by themselves with the PDF.
+                        @else WhatsApp Business API keys are not in .env yet, so WhatsApp opens with the message ready and you press send. Once the keys are added it sends by itself. @endif
+                    </span></span>
                 </label>
-                <label class="flex gap-3 rounded-lg border border-slate-200 p-3 has-[:checked]:border-brand-500 has-[:checked]:bg-brand-50 {{ $cloudReady ? 'cursor-pointer' : 'opacity-60' }}">
-                    <input type="radio" name="whatsapp_mode" value="cloud" @checked($s['whatsapp_mode'] === 'cloud') @disabled(!$cloudReady) class="mt-0.5">
-                    <span><span class="block text-sm font-medium">WhatsApp Business API (automatic)</span><span class="block text-xs text-slate-500">Sends all bills with PDF by itself. {{ $cloudReady ? 'Connected.' : 'Not set up: needs Meta WhatsApp Cloud API keys in the .env file (see README).' }}</span></span>
+                <label class="flex cursor-pointer gap-3 rounded-lg border border-slate-200 p-3 has-[:checked]:border-brand-500 has-[:checked]:bg-brand-50">
+                    <input type="radio" name="whatsapp_mode" value="link" @checked($s['whatsapp_mode'] === 'link') class="mt-0.5">
+                    <span><span class="block text-sm font-medium">Always use WhatsApp link</span><span class="block text-xs text-slate-500">Open WhatsApp with the message ready and press send yourself, even if the API is connected.</span></span>
                 </label>
             </div>
         </section>

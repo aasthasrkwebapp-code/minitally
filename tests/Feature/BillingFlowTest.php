@@ -198,7 +198,6 @@ class BillingFlowTest extends TestCase
     public function test_whatsapp_cloud_mode_sends_template_with_pdf(): void
     {
         config(['services.whatsapp.token' => 'test-token', 'services.whatsapp.phone_number_id' => '12345']);
-        Setting::put('whatsapp_mode', 'cloud');
         Http::fake(['graph.facebook.com/*' => Http::response(['messages' => [['id' => 'wamid.1']]])]);
 
         $this->importSample();
@@ -401,12 +400,41 @@ class BillingFlowTest extends TestCase
 
         // With the WhatsApp Business API, both go out automatically
         config(['services.whatsapp.token' => 't', 'services.whatsapp.phone_number_id' => '1']);
-        Setting::put('whatsapp_mode', 'cloud');
         Http::fake(['graph.facebook.com/*' => Http::response(['messages' => [['id' => 'x']]])]);
         Invoice::query()->update(['emailed_at' => null, 'whatsapp_at' => null]);
 
         $this->post(route('billing.send-all'), ['month' => self::MONTH])->assertRedirect(route('billing.index', ['month' => self::MONTH]));
         Http::assertSentCount(Invoice::whereHas('client', fn ($q) => $q->whereNotNull('whatsapp'))->count());
         $this->assertSame(0, Invoice::whereNull('emailed_at')->count());
+    }
+
+    public function test_whatsapp_api_errors_are_shown_and_link_mode_can_be_forced(): void
+    {
+        config(['services.whatsapp.token' => 't', 'services.whatsapp.phone_number_id' => '1']);
+        Http::fake(['graph.facebook.com/*' => Http::response(['error' => ['message' => 'Template name does not exist']], 400)]);
+        $this->importSample();
+        app(InvoiceService::class)->generateForMonth(self::MONTH);
+        $invoice = Invoice::whereHas('client', fn ($q) => $q->where('name', 'Exporter Adda'))->first();
+
+        $this->get(route('invoices.whatsapp', $invoice))->assertSessionHasErrors(['send' => 'WhatsApp not sent: WhatsApp API error: Template name does not exist']);
+        $this->assertNull($invoice->fresh()->whatsapp_at);
+
+        Setting::put('whatsapp_mode', 'link');
+        $this->assertStringStartsWith('https://wa.me/', $this->get(route('invoices.whatsapp', $invoice))->headers->get('Location'));
+    }
+
+    public function test_reminder_goes_through_whatsapp_api_when_connected(): void
+    {
+        config(['services.whatsapp.token' => 't', 'services.whatsapp.phone_number_id' => '1']);
+        Http::fake(['graph.facebook.com/*' => Http::response(['messages' => [['id' => 'x']]])]);
+        Mail::fake();
+        $this->importSample();
+        app(InvoiceService::class)->generateForMonth(self::MONTH);
+        $client = Client::where('name', 'Exporter Adda')->first();
+
+        $this->post(route('outstanding.send', $client))->assertRedirect();
+        Mail::assertSent(ReminderMail::class, 1);
+        Http::assertSent(fn ($r) => $r['template']['name'] === 'payment_reminder' && $r['to'] === '918114414800'
+            && count($r['template']['components'][0]['parameters']) === 3);
     }
 }
