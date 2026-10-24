@@ -12,7 +12,7 @@ Who a bill goes to is a setting: **Party name** (default), **Mail by**, or **cho
 
 ## Requirements
 
-- PHP 8.2+ with `pdo_mysql`, `mbstring`, `gd`, `zip`, `xml`, `intl` (optional)
+- PHP 8.3+ with `pdo_mysql`, `mbstring`, `gd`, `zip`, `xml`, `intl` (optional)
 - MySQL 8 (or MariaDB 10.6+)
 - Composer
 - Node.js is **not** needed on the server: the built CSS/JS is committed in `public/build`.
