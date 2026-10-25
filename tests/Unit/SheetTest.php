@@ -9,7 +9,7 @@ class SheetTest extends TestCase
 {
     public function test_reads_common_bank_and_excel_date_formats(): void
     {
-        foreach (['05/11/2026', '05-11-2026', '05.11.2026', '05-Nov-2026', '05 Nov 2026', '05/11/26', '2026-11-05', '05/11/2026 10:32:11'] as $value) {
+        foreach (['05/11/2026', '05-11-2026', '05.11.2026', '05.11.26', '5/11/2026', '05-Nov-2026', '05 Nov 2026', '05/11/26', '2026-11-05', '05/11/2026 10:32:11'] as $value) {
             $this->assertSame('2026-11-05', Sheet::date($value)?->toDateString(), "Failed for $value");
         }
         $this->assertSame('2026-10-01', Sheet::date(46296)?->toDateString()); // Excel serial

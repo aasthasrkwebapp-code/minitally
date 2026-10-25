@@ -14,7 +14,7 @@
             <p class="mt-2 font-medium text-slate-800">S.NO, ISSUED DATE, PARTY NAME, REFERENCE NO., INVOICE NUMBER, IR/NA, DESTINATION, CERTIFICATE, AMOUNT, TRANSACTION AMOUNT, MAIL BY</p>
             <p class="mt-2">Issued date, Party name and Amount are required. Column order does not matter, and a few title rows above the heading are fine.</p>
             <p class="mt-2">Bills go to: <strong>{{ ['party' => 'Party name', 'mail_by' => 'Mail by', 'manual' => 'a "Client" column in the sheet (or Party name if missing)'][$mode] }}</strong> (change in Settings). New names become clients automatically.</p>
-            <p class="mt-2">Each import adds rows, so import each sheet only once.</p>
+            <p class="mt-2">Importing the same sheet again is safe: rows already in the software are skipped, only new rows are added. So you can keep adding to one Excel file and import it every day.</p>
             <a href="{{ route('entries.sample') }}" class="btn btn-secondary mt-4"><x-icon name="download" class="size-4" />Download sample (50 entries)</a>
         </div>
     </div>

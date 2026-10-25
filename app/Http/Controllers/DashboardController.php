@@ -12,7 +12,7 @@ class DashboardController extends Controller
     public function __invoke()
     {
         $monthStart = now()->startOfMonth()->toDateString();
-        $monthEnd = now()->endOfMonth()->toDateString();
+        $monthEnd = now()->endOfMonth()->toDateTimeString();
 
         $clients = Client::with('invoices', 'payments')->get();
         $dues = $clients->map(fn ($c) => ['client' => $c, 'due' => $c->outstanding()])

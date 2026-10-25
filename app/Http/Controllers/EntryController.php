@@ -134,8 +134,11 @@ class EntryController extends Controller
         }
 
         $msg = "{$result['imported']} entries imported.";
+        if ($result['duplicates']) {
+            $msg .= " {$result['duplicates']} rows were already in the software, so they were not added again.";
+        }
         if ($result['skipped']) {
-            $msg .= " {$result['skipped']} rows skipped (missing date, party name or amount).";
+            $msg .= " {$result['skipped']} rows skipped because the date, party name or amount was missing or unreadable (Excel row ".implode(', ', array_slice($result['skipped_rows'], 0, 15)).(count($result['skipped_rows']) > 15 ? ', ...' : '').').';
         }
         if ($result['new_clients']) {
             $msg .= ' '.count($result['new_clients']).' new client(s) added: '.implode(', ', $result['new_clients']).'. Add their email and WhatsApp on the Clients page.';

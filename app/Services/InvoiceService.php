@@ -115,7 +115,8 @@ class InvoiceService
     {
         $start = Carbon::createFromFormat('Y-m-d', $period.'-01')->startOfMonth();
 
-        return [$start->toDateString(), $start->copy()->endOfMonth()->toDateString()];
+        // End includes the whole last day, whichever way the database stores dates
+        return [$start->toDateString(), $start->copy()->endOfMonth()->toDateString().' 23:59:59'];
     }
 
     public function pdf(Invoice $invoice): \Barryvdh\DomPDF\PDF

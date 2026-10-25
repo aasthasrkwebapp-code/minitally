@@ -65,7 +65,7 @@ class Sheet
         }
         $value = trim(preg_replace('/\s+/', ' ', (string) $value));
         $value = preg_replace('/\s+\d{1,2}:\d{2}(:\d{2})?.*$/', '', $value);
-        foreach (['d/m/Y', 'd-m-Y', 'd.m.Y', 'd-M-Y', 'd M Y', 'd-M-y', 'd/m/y', 'd-m-y', 'Y-m-d', 'd M, Y', 'M d, Y'] as $format) {
+        foreach (['d/m/Y', 'd-m-Y', 'd.m.Y', 'd-M-Y', 'd M Y', 'd-M-y', 'd/m/y', 'd-m-y', 'd.m.y', 'd M y', 'Y-m-d', 'Y/m/d', 'd M, Y', 'M d, Y'] as $format) {
             try {
                 $date = Carbon::createFromFormat('!'.$format, $value);
                 if ($date && $date->format($format) === $value || $date && $date->year > 1990) {

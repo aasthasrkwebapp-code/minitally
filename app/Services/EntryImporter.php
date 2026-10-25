@@ -24,7 +24,7 @@ class EntryImporter
         'client' => '/^(client|bill\s*to)/',
     ];
 
-    /** @return array{imported:int, skipped:int, new_clients:array<int,string>} */
+    /** @return array{imported:int, skipped:int, duplicates:int, skipped_rows:array<int,int>, new_clients:array<int,string>} */
     public function import(string $path): array
     {
         $rows = Sheet::rows($path);
@@ -37,15 +37,21 @@ class EntryImporter
         $before = Client::pluck('id')->all();
         $imported = 0;
         $skipped = 0;
+        $skippedRows = [];
+        $duplicates = 0;
+        $seen = [];
 
-        foreach (array_slice($rows, $headerRow + 1) as $row) {
+        foreach (array_slice($rows, $headerRow + 1, null, true) as $index => $row) {
             $get = fn ($field) => isset($map[$field]) ? trim((string) ($row[$map[$field]] ?? '')) : '';
             $date = Sheet::date($row[$map['issued_date']] ?? null);
             $amount = Sheet::money($row[$map['amount']] ?? null);
 
             if (! $date || $amount <= 0 || $get('party_name') === '') {
-                if (array_filter($row, fn ($c) => $c !== null && trim((string) $c) !== '')) {
+                $filled = array_filter($row, fn ($c) => $c !== null && trim((string) $c) !== '');
+                $isTotalRow = (bool) array_filter($filled, fn ($c) => preg_match('/^\s*(grand\s*)?total\b/i', (string) $c));
+                if ($filled && ! $isTotalRow) {
                     $skipped++;
+                    $skippedRows[] = $index + 1; // Excel row number
                 }
 
                 continue;
@@ -63,6 +69,20 @@ class EntryImporter
                 'transaction_amount' => isset($map['transaction_amount']) && $get('transaction_amount') !== '' ? Sheet::money($get('transaction_amount')) : null,
                 'mail_by' => $get('mail_by') ?: null,
             ];
+
+            // Importing the same sheet again must not double the entries. A row counts as already
+            // imported when the same date, party, reference no., invoice number and amount exist
+            // (as many times as it appears in this sheet).
+            $key = implode('|', [$data['issued_date'], Client::normalise($data['party_name']), $data['reference_no'], $data['invoice_number'], number_format($amount, 2, '.', '')]);
+            $seen[$key] = ($seen[$key] ?? 0) + 1;
+            $existing = Entry::whereDate('issued_date', $data['issued_date'])->where('party_name', $data['party_name'])
+                ->where('reference_no', $data['reference_no'])->where('invoice_number', $data['invoice_number'])
+                ->where('amount', $amount)->count();
+            if ($existing >= $seen[$key]) {
+                $duplicates++;
+
+                continue;
+            }
 
             // A "Client"/"Bill to" column, if present, always wins
             $clientId = match (true) {
@@ -82,7 +102,7 @@ class EntryImporter
 
         $newClients = Client::whereNotIn('id', $before)->orderBy('name')->pluck('name')->all();
 
-        return ['imported' => $imported, 'skipped' => $skipped, 'new_clients' => $newClients];
+        return ['imported' => $imported, 'skipped' => $skipped, 'duplicates' => $duplicates, 'skipped_rows' => $skippedRows, 'new_clients' => $newClients];
     }
 
     private function clientByName(string $name): int
