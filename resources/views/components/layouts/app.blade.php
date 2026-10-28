@@ -7,7 +7,7 @@
         ['bank.index', 'Bank statement', 'bank', 'bank.*'],
         ['payments.index', 'Payments', 'rupee', 'payments.*'],
         ['outstanding.index', 'Outstanding', 'bell', 'outstanding.*'],
-        ['clients.index', 'Clients', 'users', 'clients.*'],
+        ['clients.index', 'Exporters', 'users', 'clients.*'],
         ['settings.edit', 'Settings', 'cog', 'settings.*'],
     ];
     $bottom = [

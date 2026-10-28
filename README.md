@@ -3,10 +3,14 @@
 A Laravel 12 + MySQL website (installable as an app on phone, tablet and computer) for month-end billing:
 
 1. **Daily entries** with the office's columns: S.NO, ISSUED DATE, PARTY NAME, REFERENCE NO., INVOICE NUMBER, IR/NA, DESTINATION, CERTIFICATE, AMOUNT, TRANSACTION AMOUNT, MAIL BY. Add, edit and list them on the site, or import an Excel/CSV sheet.
-2. **Month-end bills**: one bill per client per month, as a PDF in the Rahul Chandak invoice format (S.No, Party name, Type = IR/NA, Certificate, Country = Destination, Invoice no., Amount, total in words, bank details).
+2. **Month-end bills**: one bill per exporter per month, as a PDF in the Rahul Chandak invoice format (S.No, Party name, Type = IR/NA, Certificate, Country = Destination, Invoice no., Amount, total in words, bank details).
 3. **Email every bill** with the PDF attached, and **send it on WhatsApp** (free WhatsApp link, or fully automatic through the WhatsApp Business Cloud API).
-4. **Bank statement upload** (PNB and most Indian banks, XLS/XLSX/CSV): credits are matched to clients by name or exact amount, you confirm, payments are saved and bills are marked paid or part paid.
+4. **Bank statement upload** (PNB and most Indian banks, XLS/XLSX/CSV): credits are matched to exporters by name or exact amount, you confirm, payments are saved and bills are marked paid or part paid.
 5. **Outstanding reminders** by email (with pending bills attached) and WhatsApp, by hand or automatically on set days.
+
+6. **Exporters**: name, email ID, mobile number, address, DGFT user ID and password, ICEGATE ID and password, DSC validity date and DSC status (Available / Delivered / Expired). Passwords are stored encrypted with the site's `APP_KEY` and stay hidden until you tap **Show**. The Exporters list warns you 30 days before a DSC runs out and marks expired ones in red.
+
+Keep a copy of `APP_KEY` from `.env`: the saved DGFT and ICEGATE passwords can only be read with the same key.
 
 Who a bill goes to is a setting: **Party name** (default), **Mail by**, or **chosen on each entry**.
 
@@ -49,7 +53,7 @@ Who a bill goes to is a setting: **Party name** (default), **Mail by**, or **cho
    Then switch the automation on in **Settings → Automatic sending**.
 7. **HTTPS** must be on (free SSL in hPanel). The "Install app" button and offline page only work over HTTPS.
 
-Optional dummy data (8 clients, 50 entries for this month): `php artisan db:seed --class=DemoSeeder`. Sample Excel files: `php artisan billing:samples` writes them to `storage/app/samples`, and both are downloadable from the Entries and Bank pages.
+Optional dummy data (8 exporters, 50 entries for this month): `php artisan db:seed --class=DemoSeeder`. Sample Excel files: `php artisan billing:samples` writes them to `storage/app/samples`, and both are downloadable from the Entries and Bank pages.
 
 ## Monthly routine
 
@@ -97,7 +101,9 @@ As soon as `WHATSAPP_TOKEN` and `WHATSAPP_PHONE_NUMBER_ID` are set, bills and re
 
 ## Database file
 
-Instead of `php artisan migrate --seed` you can import `minitally-database.sql` (tables + login user) in phpMyAdmin: select your database → Import → choose the file → Go. `minitally-database-with-50-demo-entries.sql` also has 8 dummy clients and 50 entries for trying things out.
+Instead of `php artisan migrate --seed` you can import `minitally-database.sql` (tables + login user) in phpMyAdmin: select your database → Import → choose the file → Go. `minitally-database-with-50-demo-entries.sql` also has 8 dummy exporters and 50 entries for trying things out.
+
+Already running the site? Don't re-import those (they replace all tables). Either run `php artisan migrate --force`, or import `minitally-upgrade-exporters.sql` once in phpMyAdmin: it adds the DGFT, ICEGATE and DSC columns and keeps all existing data.
 
 ## Development
 

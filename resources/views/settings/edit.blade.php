@@ -35,9 +35,9 @@ $groups = [
 
         <section class="card card-pad">
             <h2 class="mb-1 font-semibold">Who gets the month-end bill</h2>
-            <p class="mb-4 text-sm text-slate-500">Each client gets one bill per month listing all of their entries.</p>
+            <p class="mb-4 text-sm text-slate-500">Each exporter gets one bill per month listing all of their entries.</p>
             <div class="grid gap-3 sm:grid-cols-3">
-                @foreach (['party' => ['Party name', 'Every party name is a client'], 'mail_by' => ['Mail by', 'The name in Mail by is the client'], 'manual' => ['Choose on each entry', 'Pick the client in a "Bill to" box']] as $k => [$t, $d])
+                @foreach (['party' => ['Party name', 'Every party name is an exporter'], 'mail_by' => ['Mail by', 'The name in Mail by is the exporter'], 'manual' => ['Choose on each entry', 'Pick the exporter in a "Bill to" box']] as $k => [$t, $d])
                     <label class="flex cursor-pointer gap-3 rounded-lg border border-slate-200 p-3 has-[:checked]:border-brand-500 has-[:checked]:bg-brand-50">
                         <input type="radio" name="bill_to" value="{{ $k }}" @checked($s['bill_to'] === $k) class="mt-0.5">
                         <span><span class="block text-sm font-medium">{{ $t }}</span><span class="block text-xs text-slate-500">{{ $d }}</span></span>
@@ -49,7 +49,7 @@ $groups = [
 
         <section class="card card-pad">
             <h2 class="mb-1 font-semibold">Messages</h2>
-            <p class="mb-4 text-xs text-slate-500">You can use: {client} {invoice} {month} {amount} {link} {business}. Reminders also: {invoices}.</p>
+            <p class="mb-4 text-xs text-slate-500">You can use: {exporter} {invoice} {month} {amount} {link} {business}. Reminders also: {invoices}. ({client} still works too.)</p>
             <div class="space-y-4">
                 <div><label class="label">Bill email</label><textarea name="email_bill_message" rows="7" class="input">{{ old('email_bill_message', $s['email_bill_message']) }}</textarea></div>
                 <div><label class="label">Bill WhatsApp</label><textarea name="whatsapp_bill_message" rows="3" class="input">{{ old('whatsapp_bill_message', $s['whatsapp_bill_message']) }}</textarea></div>

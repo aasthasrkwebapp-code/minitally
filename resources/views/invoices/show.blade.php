@@ -39,7 +39,7 @@
     </div>
 
     <div class="mt-4 flex flex-wrap items-center gap-3 text-sm text-slate-500">
-        <span>Client link: <a href="{{ $invoice->publicUrl() }}" target="_blank" class="break-all text-brand-600 underline">{{ $invoice->publicUrl() }}</a></span>
+        <span>Exporter link: <a href="{{ $invoice->publicUrl() }}" target="_blank" class="break-all text-brand-600 underline">{{ $invoice->publicUrl() }}</a></span>
         <form method="POST" action="{{ route('invoices.destroy', $invoice) }}" data-confirm="Delete this bill? Its entries go back to 'not billed' so you can bill them again.">
             @csrf @method('DELETE')
             <button class="btn btn-danger btn-sm"><x-icon name="trash" class="size-4" />Delete bill</button>

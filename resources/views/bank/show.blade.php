@@ -30,7 +30,7 @@ $pendingMatched = $credits->where('status', 'pending')->whereNotNull('client_id'
                             @else
                                 <select name="rows[{{ $t->id }}]" class="input {{ $t->client_id ? 'border-emerald-300 bg-emerald-50' : ($t->status === 'ignored' ? 'text-slate-400' : 'border-amber-300 bg-amber-50') }}">
                                     <option value="">Not matched</option>
-                                    <option value="ignore" @selected($t->status === 'ignored')>Not a client payment (ignore)</option>
+                                    <option value="ignore" @selected($t->status === 'ignored')>Not an exporter payment (ignore)</option>
                                     @foreach ($clients as $c)<option value="{{ $c->id }}" @selected($t->client_id === $c->id && $t->status === 'pending')>{{ $c->name }}</option>@endforeach
                                 </select>
                             @endif

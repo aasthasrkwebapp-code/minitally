@@ -1,4 +1,4 @@
-// Mobile menu, confirm dialogs, dynamic entry rows and PWA install.
+// Mobile menu, confirm dialogs, dynamic entry rows, password reveal and PWA install.
 document.addEventListener('click', (e) => {
     const toggle = e.target.closest('[data-toggle]');
     if (toggle) {
@@ -23,6 +23,23 @@ document.addEventListener('click', (e) => {
     const removeRow = e.target.closest('[data-remove-row]');
     if (removeRow) {
         removeRow.closest('[data-row]').remove();
+    }
+
+    // Show/hide a password field, or copy it
+    const reveal = e.target.closest('[data-reveal]');
+    if (reveal) {
+        const input = document.getElementById(reveal.dataset.reveal);
+        const show = input.type === 'password';
+        input.type = show ? 'text' : 'password';
+        reveal.textContent = show ? 'Hide' : 'Show';
+    }
+    const copy = e.target.closest('[data-copy]');
+    if (copy) {
+        const input = document.getElementById(copy.dataset.copy);
+        navigator.clipboard?.writeText(input.value).then(() => {
+            copy.textContent = 'Copied';
+            setTimeout(() => (copy.textContent = 'Copy'), 1500);
+        });
     }
 
     // Sending a WhatsApp link marks the row as sent so the list shows progress

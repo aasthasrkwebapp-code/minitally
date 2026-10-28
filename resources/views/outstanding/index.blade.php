@@ -1,8 +1,8 @@
 @php use App\Support\IndianNumber as N; @endphp
 <x-layouts.app title="Outstanding">
-    <x-page-header title="Outstanding payments" :subtitle="$rows->count().' clients · ₹'.N::money($total).' due'">
+    <x-page-header title="Outstanding payments" :subtitle="$rows->count().' exporters · ₹'.N::money($total).' due'">
         @if ($rows->isNotEmpty())
-            <form method="POST" action="{{ route('outstanding.email-all') }}" data-confirm="Email a reminder with pending bills attached to all {{ $rows->count() }} clients?">
+            <form method="POST" action="{{ route('outstanding.email-all') }}" data-confirm="Email a reminder with pending bills attached to all {{ $rows->count() }} exporters?">
                 @csrf <button class="btn btn-primary" data-busy="Sending..."><x-icon name="mail" class="size-4" />Email reminder to all</button>
             </form>
         @endif

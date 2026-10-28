@@ -9,13 +9,13 @@
         <div class="flex flex-col gap-2 border-b border-slate-200 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <h2 class="font-semibold"><span class="mr-1 text-brand-600">Step 1.</span> Make bills</h2>
-                <p class="text-xs text-slate-500">Entries of {{ $label }} not billed yet, grouped per client.</p>
+                <p class="text-xs text-slate-500">Entries of {{ $label }} not billed yet, grouped per exporter.</p>
             </div>
         </div>
         @if ($pending->isEmpty())
             <p class="px-4 py-6 text-center text-sm text-slate-500">All entries of {{ $label }} are billed.</p>
         @else
-            <form method="POST" action="{{ route('billing.generate') }}" data-confirm="Make bills for the selected clients?">
+            <form method="POST" action="{{ route('billing.generate') }}" data-confirm="Make bills for the selected exporters?">
                 @csrf
                 <input type="hidden" name="month" value="{{ $month }}">
                 <ul class="divide-y divide-slate-100">

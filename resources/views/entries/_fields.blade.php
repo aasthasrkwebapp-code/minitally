@@ -11,12 +11,12 @@
     <div class="sm:col-span-2"><label class="label">Certificate</label><input name="{{ $name('certificate') }}" value="{{ $val('certificate') }}" list="dl-certificate" class="input"></div>
     <div><label class="label">Amount (₹) *</label><input name="{{ $name('amount') }}" value="{{ $val('amount') }}" type="number" step="0.01" min="0" inputmode="decimal" class="input"></div>
     <div><label class="label">Transaction amount (₹)</label><input name="{{ $name('transaction_amount') }}" value="{{ $val('transaction_amount') }}" type="number" step="0.01" min="0" inputmode="decimal" class="input"></div>
-    <div class="{{ $mode === 'manual' ? '' : 'sm:col-span-2' }}"><label class="label">Mail by{{ $mode === 'mail_by' ? ' (bill goes to this client) *' : '' }}</label><input name="{{ $name('mail_by') }}" value="{{ $val('mail_by') }}" list="dl-mail_by" class="input"></div>
+    <div class="{{ $mode === 'manual' ? '' : 'sm:col-span-2' }}"><label class="label">Mail by{{ $mode === 'mail_by' ? ' (bill goes to this exporter) *' : '' }}</label><input name="{{ $name('mail_by') }}" value="{{ $val('mail_by') }}" list="dl-mail_by" class="input"></div>
     @if ($mode === 'manual')
         <div>
             <label class="label">Bill to *</label>
             <select name="{{ $name('client_id') }}" class="input">
-                <option value="">Select client</option>
+                <option value="">Select exporter</option>
                 @foreach ($clients as $c)<option value="{{ $c->id }}" @selected($val('client_id') == $c->id)>{{ $c->name }}</option>@endforeach
             </select>
         </div>

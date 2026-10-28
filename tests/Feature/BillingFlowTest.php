@@ -71,8 +71,8 @@ class BillingFlowTest extends TestCase
         $client = Client::first();
 
         foreach (['/', '/entries', '/entries/create', '/entries/import', '/billing', '/billing/whatsapp', '/invoices',
-            "/invoices/{$invoice->id}", '/payments', '/payments/create', '/bank', '/outstanding', '/clients',
-            '/clients/create', "/clients/{$client->id}", "/clients/{$client->id}/edit", '/settings', "/entries/{$entry->id}/edit"] as $url) {
+            "/invoices/{$invoice->id}", '/payments', '/payments/create', '/bank', '/outstanding', '/exporters',
+            '/exporters/create', "/exporters/{$client->id}", "/exporters/{$client->id}/edit", '/settings', "/entries/{$entry->id}/edit"] as $url) {
             $this->get($url)->assertOk();
         }
     }
