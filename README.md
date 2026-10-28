@@ -103,6 +103,8 @@ As soon as `WHATSAPP_TOKEN` and `WHATSAPP_PHONE_NUMBER_ID` are set, bills and re
 
 Instead of `php artisan migrate --seed` you can import `minitally-database.sql` (tables + login user) in phpMyAdmin: select your database → Import → choose the file → Go. `minitally-database-with-50-demo-entries.sql` also has 8 dummy exporters and 50 entries for trying things out.
 
+Already running the site? Don't re-import those (they replace all tables). Either run `php artisan migrate --force`, or import `minitally-upgrade-exporters.sql` once in phpMyAdmin: it adds the DGFT, ICEGATE and DSC columns and keeps all existing data.
+
 ## Development
 
 ```bash
