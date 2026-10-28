@@ -1,5 +1,5 @@
 <x-layouts.app title="Bank statement">
-    <x-page-header title="Bank statement" subtitle="Upload your statement and payments are matched to clients" />
+    <x-page-header title="Bank statement" subtitle="Upload your statement and payments are matched to exporters" />
     <div class="grid gap-6 lg:grid-cols-2">
         <form method="POST" action="{{ route('bank.upload') }}" enctype="multipart/form-data" class="card card-pad space-y-4">
             @csrf
@@ -13,8 +13,8 @@
             <h2 class="font-semibold text-slate-900">How matching works</h2>
             <ul class="mt-2 list-disc space-y-1 pl-5">
                 <li>Only money received (credit) is looked at.</li>
-                <li>If the client's name, or their "name in bank statement", is in the description, it is matched.</li>
-                <li>Otherwise, if exactly one client owes that exact amount, it is matched by amount.</li>
+                <li>If the exporter's name, or their "name in bank statement", is in the description, it is matched.</li>
+                <li>Otherwise, if exactly one exporter owes that exact amount, it is matched by amount.</li>
                 <li>You check and fix the matches, then press Save. Fixed names are remembered for next month.</li>
                 <li>Uploading the same statement again will not double count payments.</li>
             </ul>

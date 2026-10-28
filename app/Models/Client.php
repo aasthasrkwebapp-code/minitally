@@ -6,21 +6,54 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/** An exporter (shown as "Exporter" everywhere; the table is still `clients`). */
 class Client extends Model
 {
     use HasFactory;
 
+    public const DSC_STATUSES = ['available' => 'Available', 'delivered' => 'Delivered', 'expired' => 'Expired'];
+
+    /** Days before DSC validity ends that a warning is shown. */
+    public const DSC_WARN_DAYS = 30;
+
     protected $fillable = [
         'name', 'contact_person', 'email', 'whatsapp', 'address',
         'bank_keywords', 'opening_balance', 'is_active',
+        'dgft_user_id', 'dgft_password', 'icegate_id', 'icegate_password',
+        'dsc_valid_till', 'dsc_status',
     ];
+
+    protected $hidden = ['dgft_password', 'icegate_password'];
 
     protected function casts(): array
     {
         return [
             'opening_balance' => 'decimal:2',
             'is_active' => 'boolean',
+            'dgft_password' => 'encrypted',
+            'icegate_password' => 'encrypted',
+            'dsc_valid_till' => 'date',
         ];
+    }
+
+    /** Days left on the DSC (negative once past), or null when no date is set. */
+    public function dscDaysLeft(): ?int
+    {
+        return $this->dsc_valid_till ? (int) now()->startOfDay()->diffInDays($this->dsc_valid_till, false) : null;
+    }
+
+    /** expired, expiring (within DSC_WARN_DAYS), ok, or null when nothing is filled in. */
+    public function dscAlert(): ?string
+    {
+        $days = $this->dscDaysLeft();
+        if ($this->dsc_status === 'expired' || ($days !== null && $days < 0)) {
+            return 'expired';
+        }
+        if ($days !== null && $days <= self::DSC_WARN_DAYS) {
+            return 'expiring';
+        }
+
+        return $this->dsc_status || $days !== null ? 'ok' : null;
     }
 
     public function entries(): HasMany
