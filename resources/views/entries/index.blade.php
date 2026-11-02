@@ -15,7 +15,7 @@
     </form>
 
     <div class="card overflow-hidden">
-        <ul class="divide-y divide-slate-100 lg:hidden">
+        <ul class="divide-y divide-slate-100 xl:hidden">
             @forelse ($entries as $e)
                 <li><a href="{{ route('entries.edit', $e) }}" class="block px-4 py-3 hover:bg-slate-50">
                     <div class="flex items-start justify-between gap-2">
@@ -36,8 +36,8 @@
                 <li class="px-4 py-8 text-center text-sm text-slate-500">No entries for this month.</li>
             @endforelse
         </ul>
-        <div class="hidden overflow-x-auto lg:block">
-            <table class="table">
+        <div class="hidden overflow-x-auto xl:block">
+            <table class="table table-compact">
                 <thead><tr>
                     <th>S.No</th><th>Issued date</th><th>Party name</th><th>Reference no.</th><th>Invoice number</th><th>IR/NA</th>
                     <th>Destination</th><th>Certificate</th><th class="text-right">Amount</th><th class="text-right">Transaction amount</th><th>Mail by</th>
@@ -49,17 +49,17 @@
                         <td>{{ $sn + $n + 1 }}</td>
                         <td class="whitespace-nowrap">{{ $e->issued_date->format('d-m-Y') }}</td>
                         <td class="font-medium text-slate-900">{{ $e->party_name }}</td>
-                        <td>{{ $e->reference_no }}</td>
-                        <td>{{ $e->invoice_number }}</td>
+                        <td class="whitespace-nowrap">{{ $e->reference_no }}</td>
+                        <td class="whitespace-nowrap">{{ $e->invoice_number }}</td>
                         <td>{{ $e->ir_na }}@if ($e->sets > 1) · {{ $e->sets }} sets @endif @if ($e->quotation_id)<a href="{{ route('quotations.show', $e->quotation_id) }}" class="ml-1 text-xs text-emerald-700 hover:underline" title="Amount from quotation">Quote</a>@endif</td>
                         <td>{{ $e->destination }}</td>
                         <td>{{ $e->certificate }}</td>
-                        <td class="text-right font-medium">{{ N::money($e->amount) }}</td>
-                        <td class="text-right">{{ $e->transaction_amount !== null ? N::money($e->transaction_amount) : '' }}</td>
+                        <td class="whitespace-nowrap text-right font-medium">{{ N::money($e->amount) }}</td>
+                        <td class="whitespace-nowrap text-right">{{ $e->transaction_amount !== null ? N::money($e->transaction_amount) : '' }}</td>
                         <td>{{ $e->mail_by }}</td>
                         @if ($mode !== 'party')<td>{{ $e->client->name }}</td>@endif
-                        <td class="whitespace-nowrap text-right">
-                            @if ($e->invoice)<a href="{{ route('invoices.show', $e->invoice) }}" class="badge-muted badge mr-1">{{ $e->invoice->number }}</a>@endif
+                        <td class="text-right">
+                            @if ($e->invoice)<a href="{{ route('invoices.show', $e->invoice) }}" class="badge-muted badge mb-1 whitespace-nowrap 2xl:mb-0 2xl:mr-1">{{ $e->invoice->number }}</a>@endif
                             <a href="{{ route('entries.edit', $e) }}" class="btn btn-secondary btn-sm">Edit</a>
                         </td>
                     </tr>
