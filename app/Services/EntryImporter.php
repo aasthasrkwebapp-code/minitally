@@ -21,7 +21,7 @@ class EntryImporter
         'amount' => '/^(amount|amt|fees?)\.?$/',
         'transaction_amount' => '/^(transaction|txn)\s*(amount|amt)/',
         'mail_by' => '/^mail\s*by/',
-        'client' => '/^(client|bill\s*to)/',
+        'client' => '/^(exporter|client|bill\s*to)/',
     ];
 
     /** @return array{imported:int, skipped:int, duplicates:int, skipped_rows:array<int,int>, new_clients:array<int,string>} */
@@ -84,7 +84,7 @@ class EntryImporter
                 continue;
             }
 
-            // A "Client"/"Bill to" column, if present, always wins
+            // An "Exporter"/"Client"/"Bill to" column, if present, always wins
             $clientId = match (true) {
                 $get('client') !== '' => $this->clientByName($get('client')),
                 Entry::billToMode() === 'manual' => $this->clientByName($data['party_name']),

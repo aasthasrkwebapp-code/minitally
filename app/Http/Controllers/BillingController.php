@@ -93,7 +93,7 @@ class BillingController extends Controller
         }
 
         return redirect()->route('billing.whatsapp', ['month' => $data['month']])
-            ->with('ok', "$emailed bill(s) emailed. Now tap Send for each client below to send it on WhatsApp.")
+            ->with('ok', "$emailed bill(s) emailed. Now tap Send for each exporter below to send it on WhatsApp.")
             ->with('errors_list', $failed);
     }
 

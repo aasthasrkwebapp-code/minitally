@@ -9,16 +9,16 @@
         <x-stat label="Work this month" :value="'₹'.N::money($workThisMonth, false)" :hint="$entriesThisMonth.' entries'" tone="brand" :href="route('entries.index')" />
         <x-stat label="Not billed yet" :value="'₹'.N::money($unbilled, false)" hint="Bill at month end" tone="amber" :href="route('billing.index')" />
         <x-stat label="Collected this month" :value="'₹'.N::money($collectedThisMonth, false)" tone="green" :href="route('payments.index')" />
-        <x-stat label="Total outstanding" :value="'₹'.N::money($totalDue, false)" :hint="$topDues->count().' clients'" tone="red" :href="route('outstanding.index')" />
+        <x-stat label="Total outstanding" :value="'₹'.N::money($totalDue, false)" :hint="$topDues->count().' exporters'" tone="red" :href="route('outstanding.index')" />
     </div>
 
     <div class="mt-6 card card-pad">
         <h2 class="font-semibold text-slate-900">Month-end in 4 steps</h2>
         <ol class="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             @foreach ([
-                ['Make bills', 'One bill per client from the month\'s entries', route('billing.index'), 'bill'],
+                ['Make bills', 'One bill per exporter from the month\'s entries', route('billing.index'), 'bill'],
                 ['Send bills', 'Email with PDF and WhatsApp with link', route('billing.index'), 'send'],
-                ['Upload bank statement', 'Payments are matched to clients', route('bank.index'), 'bank'],
+                ['Upload bank statement', 'Payments are matched to exporters', route('bank.index'), 'bank'],
                 ['Remind unpaid', 'Email and WhatsApp reminders', route('outstanding.index'), 'bell'],
             ] as $i => [$t, $d, $href, $icon])
                 <li><a href="{{ $href }}" class="flex h-full gap-3 rounded-lg border border-slate-200 p-3 hover:border-brand-200 hover:bg-brand-50">

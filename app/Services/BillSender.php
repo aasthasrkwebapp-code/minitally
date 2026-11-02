@@ -23,6 +23,7 @@ class BillSender
     public function billValues(Invoice $invoice): array
     {
         return [
+            'exporter' => $invoice->client->contact_person ?: $invoice->client->name,
             'client' => $invoice->client->contact_person ?: $invoice->client->name,
             'invoice' => $invoice->number,
             'month' => $invoice->periodLabel(),
@@ -79,6 +80,7 @@ class BillSender
         $unpaid = $client->invoices()->where('status', '!=', 'paid')->orderBy('invoice_date')->get();
 
         return [
+            'exporter' => $client->contact_person ?: $client->name,
             'client' => $client->contact_person ?: $client->name,
             'amount' => IndianNumber::money($client->outstanding()),
             'invoices' => $unpaid->map(fn ($i) => $i->number.' (Rs. '.IndianNumber::money($i->balance()).')')->implode(', ') ?: '-',

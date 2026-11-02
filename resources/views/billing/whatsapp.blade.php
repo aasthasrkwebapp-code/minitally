@@ -12,7 +12,7 @@
         </form>
     @else
         <div class="card card-pad mb-4 text-sm text-slate-600">
-            Tap <strong>Send</strong> on each client. WhatsApp opens with the message and bill link already typed; press send there and come back for the next one.
+            Tap <strong>Send</strong> on each exporter. WhatsApp opens with the message and bill link already typed; press send there and come back for the next one.
             For fully automatic sending, connect the WhatsApp Business API (see Settings).
         </div>
     @endif

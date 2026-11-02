@@ -15,6 +15,33 @@
         <x-stat label="Outstanding" :value="'₹'.N::money($due)" :tone="$due > 0 ? 'red' : 'slate'" />
     </div>
 
+    <div class="card mt-6 overflow-hidden">
+        <h2 class="flex items-center gap-2 border-b border-slate-200 px-4 py-3 font-semibold">Exporter details <x-dsc-badge :client="$client" /></h2>
+        <dl class="grid gap-x-6 gap-y-3 p-4 text-sm sm:grid-cols-2">
+            <div><dt class="text-xs text-slate-500">Email ID</dt><dd class="break-all">{{ $client->email ?: '—' }}</dd></div>
+            <div><dt class="text-xs text-slate-500">Mobile number</dt><dd>{{ $client->whatsapp ?: '—' }}</dd></div>
+            <div class="sm:col-span-2"><dt class="text-xs text-slate-500">Address</dt><dd>{!! $client->address ? nl2br(e($client->address)) : '—' !!}</dd></div>
+            @foreach ([['DGFT user ID', 'dgft_user_id', 'DGFT password', 'dgft_password'], ['ICEGATE ID', 'icegate_id', 'ICEGATE password', 'icegate_password']] as [$idLabel, $idField, $pwLabel, $pwField])
+                <div><dt class="text-xs text-slate-500">{{ $idLabel }}</dt><dd class="break-all">{{ $client->$idField ?: '—' }}</dd></div>
+                <div><dt class="text-xs text-slate-500">{{ $pwLabel }}</dt>
+                    <dd>
+                        @if ($client->$pwField)
+                            <div class="flex items-center gap-2">
+                                <input id="s-{{ $pwField }}" type="password" value="{{ $client->$pwField }}" readonly class="input py-1">
+                                <button type="button" data-reveal="s-{{ $pwField }}" class="btn btn-secondary btn-sm shrink-0">Show</button>
+                                <button type="button" data-copy="s-{{ $pwField }}" class="btn btn-secondary btn-sm shrink-0">Copy</button>
+                            </div>
+                        @else
+                            —
+                        @endif
+                    </dd>
+                </div>
+            @endforeach
+            <div><dt class="text-xs text-slate-500">DSC validity date</dt><dd>{{ $client->dsc_valid_till?->format('d-m-Y') ?? '—' }}</dd></div>
+            <div><dt class="text-xs text-slate-500">DSC status</dt><dd>{{ App\Models\Client::DSC_STATUSES[$client->dsc_status] ?? '—' }}</dd></div>
+        </dl>
+    </div>
+
     <div class="mt-6 grid gap-6 xl:grid-cols-2">
         <div class="card overflow-hidden">
             <h2 class="border-b border-slate-200 px-4 py-3 font-semibold">Bills</h2>

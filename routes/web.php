@@ -32,7 +32,9 @@ Route::get('entries', [EntryController::class, 'index'])->name('entries.index')-
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/', DashboardController::class)->name('dashboard');
 
-    Route::resource('clients', ClientController::class);
+    // Shown as "Exporters"; route names stay clients.* and old /clients links still work
+    Route::resource('exporters', ClientController::class)->names('clients')->parameters(['exporters' => 'client']);
+    Route::get('clients/{path?}', fn (?string $path = null) => redirect('/exporters'.($path ? '/'.$path : '')))->where('path', '.*');
 
     Route::get('entries/import', [EntryController::class, 'importForm'])->name('entries.import');
     Route::post('entries/import', [EntryController::class, 'import'])->name('entries.import.store');
