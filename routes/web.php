@@ -11,6 +11,7 @@ use App\Http\Controllers\OutstandingController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PublicInvoiceController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\StaffController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -25,7 +26,10 @@ Route::get('/i/{token}/pdf', [PublicInvoiceController::class, 'pdf'])->name('pub
 
 Route::get('/offline', fn () => view('offline'))->name('offline');
 
-Route::middleware('auth')->group(function () {
+// Staff logins can only open the daily entries list (amounts hidden)
+Route::get('entries', [EntryController::class, 'index'])->name('entries.index')->middleware('auth');
+
+Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/', DashboardController::class)->name('dashboard');
 
     Route::resource('clients', ClientController::class);
@@ -33,7 +37,7 @@ Route::middleware('auth')->group(function () {
     Route::get('entries/import', [EntryController::class, 'importForm'])->name('entries.import');
     Route::post('entries/import', [EntryController::class, 'import'])->name('entries.import.store');
     Route::get('entries/sample', [EntryController::class, 'sample'])->name('entries.sample');
-    Route::resource('entries', EntryController::class)->except('show');
+    Route::resource('entries', EntryController::class)->except(['show', 'index']);
 
     Route::get('billing', [BillingController::class, 'index'])->name('billing.index');
     Route::post('billing/generate', [BillingController::class, 'generate'])->name('billing.generate');
@@ -70,4 +74,8 @@ Route::middleware('auth')->group(function () {
     Route::put('settings', [SettingController::class, 'update'])->name('settings.update');
     Route::post('settings/test-email', [SettingController::class, 'testEmail'])->name('settings.test-email');
     Route::put('settings/password', [SettingController::class, 'password'])->name('settings.password');
+
+    Route::post('settings/staff', [StaffController::class, 'store'])->name('staff.store');
+    Route::put('settings/staff/{staff}', [StaffController::class, 'update'])->name('staff.update');
+    Route::delete('settings/staff/{staff}', [StaffController::class, 'destroy'])->name('staff.destroy');
 });

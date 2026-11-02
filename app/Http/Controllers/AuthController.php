@@ -25,6 +25,10 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
+        if ($request->user()->isStaff()) {
+            return redirect()->route('entries.index');
+        }
+
         return redirect()->intended(route('dashboard'));
     }
 
