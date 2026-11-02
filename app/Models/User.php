@@ -22,7 +22,12 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
+
+    public const ROLE_ADMIN = 'admin';
+
+    public const ROLE_STAFF = 'staff';
 
     /**
      * The attributes that should be hidden for serialization.
@@ -45,5 +50,16 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /** Office staff: can only view daily entries, without amounts. */
+    public function isStaff(): bool
+    {
+        return $this->role === self::ROLE_STAFF;
+    }
+
+    public function scopeStaff($query)
+    {
+        return $query->where('role', self::ROLE_STAFF);
     }
 }

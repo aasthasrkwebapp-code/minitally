@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Setting;
+use App\Models\User;
 use App\Services\WhatsAppService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -17,6 +18,8 @@ class SettingController extends Controller
             'cloudReady' => $whatsapp->cloudConfigured(),
             'mailer' => config('mail.default'),
             'mailFrom' => config('mail.from.address'),
+            'staff' => User::staff()->orderBy('name')->get(),
+            'maxStaff' => StaffController::MAX_STAFF,
         ]);
     }
 

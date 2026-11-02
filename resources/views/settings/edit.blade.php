@@ -113,4 +113,35 @@ $groups = [
             <button class="btn btn-secondary">Change password</button>
         </form>
     </div>
+
+    <section class="card card-pad mt-6 space-y-4">
+        <div>
+            <h2 class="font-semibold">Staff logins ({{ $staff->count() }} of {{ $maxStaff }})</h2>
+            <p class="text-sm text-slate-500">Office staff can only view the daily entries list. They cannot see amounts, bills, payments, clients or settings, and cannot add or change entries.</p>
+        </div>
+        @foreach ($staff as $u)
+            <div class="flex flex-col gap-2 border-t border-slate-100 pt-4 sm:flex-row sm:items-center">
+                <form method="POST" action="{{ route('staff.update', $u) }}" class="grid flex-1 gap-2 sm:grid-cols-4">
+                    @csrf @method('PUT')
+                    <input name="name" value="{{ $u->name }}" class="input" required placeholder="Name">
+                    <input type="email" name="email" value="{{ $u->email }}" class="input" required placeholder="Login email">
+                    <input type="password" name="password" class="input" placeholder="New password (leave blank to keep)" autocomplete="new-password">
+                    <button class="btn btn-secondary">Save</button>
+                </form>
+                <form method="POST" action="{{ route('staff.destroy', $u) }}" onsubmit="return confirm('Delete this staff login?')">
+                    @csrf @method('DELETE')
+                    <button class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        @endforeach
+        @if ($staff->count() < $maxStaff)
+            <form method="POST" action="{{ route('staff.store') }}" class="grid gap-2 border-t border-slate-100 pt-4 sm:grid-cols-4">
+                @csrf
+                <input name="name" class="input" required placeholder="Staff name">
+                <input type="email" name="email" class="input" required placeholder="Login email">
+                <input type="password" name="password" class="input" required placeholder="Password (8+ characters)" autocomplete="new-password">
+                <button class="btn btn-primary"><x-icon name="plus" class="size-4" />Add staff login</button>
+            </form>
+        @endif
+    </section>
 </x-layouts.app>

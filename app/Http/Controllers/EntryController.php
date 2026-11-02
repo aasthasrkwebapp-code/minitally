@@ -40,10 +40,11 @@ class EntryController extends Controller
 
         return view('entries.index', [
             'entries' => (clone $query)->orderBy('issued_date')->orderBy('id')->paginate(100)->withQueryString(),
-            'total' => (float) (clone $query)->sum('amount'),
+            'total' => $request->user()->isStaff() ? null : (float) (clone $query)->sum('amount'),
             'clients' => Client::orderBy('name')->get(['id', 'name']),
             'month' => $month,
             'mode' => Entry::billToMode(),
+            'staffView' => $request->user()->isStaff(),
         ]);
     }
 
