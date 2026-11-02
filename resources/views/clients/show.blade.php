@@ -60,7 +60,7 @@
         <div class="card overflow-hidden">
             <h2 class="border-b border-slate-200 px-4 py-3 font-semibold">Account (ledger)</h2>
             <div class="overflow-x-auto">
-                <table class="table">
+                <table class="table table-scroll">
                     <thead><tr><th>Date</th><th>Details</th><th class="text-right">Bill</th><th class="text-right">Paid</th><th class="text-right">Balance</th></tr></thead>
                     <tbody class="divide-y divide-slate-100">
                     @forelse ($ledger as $r)

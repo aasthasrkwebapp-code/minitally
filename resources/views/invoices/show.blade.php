@@ -22,7 +22,7 @@
 
     <div class="card mt-6 overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="table">
+            <table class="table table-scroll">
                 <thead><tr><th>S.No</th><th>Issued date</th><th>Party name</th><th>IR/NA</th><th>Certificate</th><th>Destination</th><th>Invoice no.</th><th>Reference no.</th><th class="text-right">Amount</th></tr></thead>
                 <tbody class="divide-y divide-slate-100">
                 @foreach ($invoice->entries as $n => $e)
@@ -33,7 +33,7 @@
                     </tr>
                 @endforeach
                 </tbody>
-                <tfoot><tr class="bg-slate-50 font-semibold"><td colspan="8" class="px-3 py-2.5">{{ N::words((float) $invoice->total) }}</td><td class="px-3 py-2.5 text-right">{{ N::money($invoice->total) }}</td></tr></tfoot>
+                <tfoot><tr class="bg-slate-50 font-semibold"><td colspan="8" class="px-3 py-2.5 whitespace-normal">{{ N::words((float) $invoice->total) }}</td><td class="px-3 py-2.5 text-right">{{ N::money($invoice->total) }}</td></tr></tfoot>
             </table>
         </div>
     </div>
