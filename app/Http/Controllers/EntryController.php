@@ -95,7 +95,7 @@ class EntryController extends Controller
 
         $invoice = $entry->invoice;
         if ($invoice && ($clientId !== $entry->client_id || substr($data['issued_date'], 0, 7) !== $invoice->period)) {
-            return back()->withInput()->withErrors(['party_name' => 'This entry is already billed in '.$invoice->number.'. Delete that bill first to move the entry to another client or month.']);
+            return back()->withInput()->withErrors(['party_name' => 'This entry is already billed in '.$invoice->number.'. Delete that bill first to move the entry to another exporter or month.']);
         }
 
         $entry->update(collect($data)->only(Entry::FIELDS)->all() + ['client_id' => $clientId]);
@@ -141,7 +141,7 @@ class EntryController extends Controller
             $msg .= " {$result['skipped']} rows skipped because the date, party name or amount was missing or unreadable (Excel row ".implode(', ', array_slice($result['skipped_rows'], 0, 15)).(count($result['skipped_rows']) > 15 ? ', ...' : '').').';
         }
         if ($result['new_clients']) {
-            $msg .= ' '.count($result['new_clients']).' new client(s) added: '.implode(', ', $result['new_clients']).'. Add their email and WhatsApp on the Clients page.';
+            $msg .= ' '.count($result['new_clients']).' new exporter(s) added: '.implode(', ', $result['new_clients']).'. Add their email and WhatsApp on the Exporters page.';
         }
 
         return redirect()->route('entries.index')->with('ok', $msg);

@@ -12,7 +12,7 @@ class SendReminders extends Command
 {
     protected $signature = 'billing:reminders {--force : run even if automatic reminders are off or today is not a reminder day}';
 
-    protected $description = 'Email (and WhatsApp, when the Business API is set up) payment reminders to every client with dues';
+    protected $description = 'Email (and WhatsApp, when the Business API is set up) payment reminders to every exporter with dues';
 
     public function handle(BillSender $sender, WhatsAppService $whatsapp): int
     {

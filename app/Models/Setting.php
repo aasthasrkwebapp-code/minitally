@@ -31,9 +31,9 @@ class Setting extends Model
         'auto_month_end_day' => '1',
         'auto_reminders' => '0',
         'reminder_days' => '10,20',
-        'email_bill_message' => "Dear {client},\n\nPlease find attached invoice {invoice} for {month} amounting to Rs. {amount}.\n\nKindly make the payment to the bank account mentioned in the invoice.\n\nThank you,\n{business}",
-        'whatsapp_bill_message' => "Dear {client}, your bill {invoice} for {month} is Rs. {amount}. Download: {link}\n- {business}",
-        'reminder_message' => "Dear {client}, a payment of Rs. {amount} is outstanding against your account. Pending bills: {invoices}. Kindly clear it at the earliest.\n- {business}",
+        'email_bill_message' => "Dear {exporter},\n\nPlease find attached invoice {invoice} for {month} amounting to Rs. {amount}.\n\nKindly make the payment to the bank account mentioned in the invoice.\n\nThank you,\n{business}",
+        'whatsapp_bill_message' => "Dear {exporter}, your bill {invoice} for {month} is Rs. {amount}. Download: {link}\n- {business}",
+        'reminder_message' => "Dear {exporter}, a payment of Rs. {amount} is outstanding against your account. Pending bills: {invoices}. Kindly clear it at the earliest.\n- {business}",
     ];
 
     public static function get(string $key, ?string $default = null): ?string

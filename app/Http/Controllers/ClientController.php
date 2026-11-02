@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Client;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ClientController extends Controller
 {
@@ -11,11 +12,17 @@ class ClientController extends Controller
     {
         $clients = Client::query()
             ->when($request->q, fn ($q, $s) => $q->where(fn ($w) => $w->where('name', 'like', "%$s%")
-                ->orWhere('email', 'like', "%$s%")->orWhere('whatsapp', 'like', "%$s%")))
+                ->orWhere('email', 'like', "%$s%")->orWhere('whatsapp', 'like', "%$s%")
+                ->orWhere('dgft_user_id', 'like', "%$s%")->orWhere('icegate_id', 'like', "%$s%")))
+            ->when($request->dsc === 'alert', fn ($q) => $q->where(fn ($w) => $w->where('dsc_status', 'expired')
+                ->orWhereDate('dsc_valid_till', '<=', now()->addDays(Client::DSC_WARN_DAYS))))
             ->orderBy('name')
             ->paginate(25)->withQueryString();
 
-        return view('clients.index', compact('clients'));
+        $dscAlerts = Client::where('is_active', true)->get(['id', 'dsc_status', 'dsc_valid_till'])
+            ->filter(fn (Client $c) => in_array($c->dscAlert(), ['expired', 'expiring']))->count();
+
+        return view('clients.index', compact('clients', 'dscAlerts'));
     }
 
     public function create()
@@ -27,7 +34,7 @@ class ClientController extends Controller
     {
         $client = Client::create($this->validated($request));
 
-        return redirect()->route('clients.show', $client)->with('ok', 'Client added.');
+        return redirect()->route('clients.show', $client)->with('ok', 'Exporter added.');
     }
 
     public function show(Client $client)
@@ -60,7 +67,7 @@ class ClientController extends Controller
         $client->update($this->validated($request));
         $client->reallocatePayments();
 
-        return redirect()->route('clients.show', $client)->with('ok', 'Client updated.');
+        return redirect()->route('clients.show', $client)->with('ok', 'Exporter updated.');
     }
 
     public function destroy(Client $client)
@@ -68,11 +75,11 @@ class ClientController extends Controller
         if ($client->invoices()->exists() || $client->payments()->exists()) {
             $client->update(['is_active' => false]);
 
-            return redirect()->route('clients.index')->with('ok', 'Client has bills or payments, so it was marked inactive instead of deleted.');
+            return redirect()->route('clients.index')->with('ok', 'Exporter has bills or payments, so it was marked inactive instead of deleted.');
         }
         $client->delete();
 
-        return redirect()->route('clients.index')->with('ok', 'Client deleted.');
+        return redirect()->route('clients.index')->with('ok', 'Exporter deleted.');
     }
 
     private function validated(Request $request): array
@@ -85,6 +92,21 @@ class ClientController extends Controller
             'address' => ['nullable', 'string', 'max:1000'],
             'bank_keywords' => ['nullable', 'string', 'max:255'],
             'opening_balance' => ['nullable', 'numeric'],
+            'dgft_user_id' => ['nullable', 'string', 'max:255'],
+            'dgft_password' => ['nullable', 'string', 'max:255'],
+            'icegate_id' => ['nullable', 'string', 'max:255'],
+            'icegate_password' => ['nullable', 'string', 'max:255'],
+            'dsc_valid_till' => ['nullable', 'date'],
+            'dsc_status' => ['nullable', Rule::in(array_keys(Client::DSC_STATUSES))],
+        ], [], [
+            'name' => 'exporter name',
+            'whatsapp' => 'mobile number',
+            'dgft_user_id' => 'DGFT user ID',
+            'dgft_password' => 'DGFT password',
+            'icegate_id' => 'ICEGATE ID',
+            'icegate_password' => 'ICEGATE password',
+            'dsc_valid_till' => 'DSC validity date',
+            'dsc_status' => 'DSC status',
         ]);
         $data['opening_balance'] = $data['opening_balance'] ?? 0;
         $data['is_active'] = $request->boolean('is_active');

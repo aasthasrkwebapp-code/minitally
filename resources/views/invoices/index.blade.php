@@ -9,7 +9,7 @@
             @endforeach
         </select>
         <select name="client_id" class="input col-span-2 sm:w-56" data-autosubmit>
-            <option value="">All clients</option>
+            <option value="">All exporters</option>
             @foreach ($clients as $c)<option value="{{ $c->id }}" @selected(request('client_id') == $c->id)>{{ $c->name }}</option>@endforeach
         </select>
     </form>

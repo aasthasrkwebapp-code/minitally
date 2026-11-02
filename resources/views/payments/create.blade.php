@@ -3,9 +3,9 @@
     <x-page-header title="Add payment" subtitle="For cash, cheque or anything not in the bank statement upload" />
     <form method="POST" action="{{ route('payments.store') }}" class="card card-pad max-w-2xl space-y-4">
         @csrf
-        <div><label class="label">Client *</label>
+        <div><label class="label">Exporter *</label>
             <select name="client_id" class="input" required>
-                <option value="">Select client</option>
+                <option value="">Select exporter</option>
                 @foreach ($clients as $c)<option value="{{ $c->id }}" @selected(old('client_id', $clientId) == $c->id)>{{ $c->name }} (due ₹{{ N::money($c->outstanding(), false) }})</option>@endforeach
             </select></div>
         <div class="grid gap-4 sm:grid-cols-3">

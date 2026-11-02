@@ -7,7 +7,7 @@
     <form method="GET" class="mb-4 grid grid-cols-2 gap-2 sm:flex">
         <input type="month" name="month" value="{{ request('month') }}" class="input sm:w-auto" data-autosubmit>
         <select name="client_id" class="input sm:w-56" data-autosubmit>
-            <option value="">All clients</option>
+            <option value="">All exporters</option>
             @foreach ($clients as $c)<option value="{{ $c->id }}" @selected(request('client_id') == $c->id)>{{ $c->name }}</option>@endforeach
         </select>
     </form>
