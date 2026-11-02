@@ -99,11 +99,17 @@ Create these two message templates in WhatsApp Manager (category *Utility*) and 
 
 As soon as `WHATSAPP_TOKEN` and `WHATSAPP_PHONE_NUMBER_ID` are set, bills and reminders are sent on WhatsApp automatically (with the PDF). Without them, the site opens WhatsApp with the message and bill link ready and you press send. Settings → WhatsApp can force the link mode. If Meta refuses a message, the reason is shown on screen.
 
+## Quotations
+
+Quotations → New quotation: pick the exporter, then add one rate per certificate, type and sets. Type is **IR (Retrospective)** or **Normal**, saved as IR / NA, the same as the IR/NA column on daily entries. Sets (1, 2, 3) is a test option until its meaning is confirmed.
+
+Mark a quotation **accepted** and, from then on, a daily entry for that exporter with the same certificate, IR/NA and sets gets its Amount filled from the quote (until the Valid until date). A typed amount is never changed. Entries filled from a quote show a "Quote" link, and the quotation page lists every entry that used it. Draft, sent and rejected quotations never fill amounts, and a quotation never changes bills, payments or outstanding.
+
 ## Database file
 
 Instead of `php artisan migrate --seed` you can import `minitally-database.sql` (tables + login user) in phpMyAdmin: select your database → Import → choose the file → Go. `minitally-database-with-50-demo-entries.sql` also has 8 dummy exporters and 50 entries for trying things out.
 
-Already running the site? Don't re-import those (they replace all tables). Either run `php artisan migrate --force`, or import `minitally-upgrade-exporters.sql` once in phpMyAdmin: it adds the DGFT, ICEGATE and DSC columns and keeps all existing data.
+Already running the site? Don't re-import those (they replace all tables). Either run `php artisan migrate --force`, or import `minitally-upgrade-exporters.sql` once in phpMyAdmin: it adds the DGFT, ICEGATE and DSC columns and keeps all existing data. Then import `minitally-upgrade-quotations.sql` the same way for the Quotations screen (run the exporters one first).
 
 ## Development
 

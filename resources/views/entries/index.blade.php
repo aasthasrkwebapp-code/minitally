@@ -23,7 +23,7 @@
                     <div class="flex items-start justify-between gap-2">
                         <div class="min-w-0">
                             <div class="truncate font-medium">{{ $e->party_name }}</div>
-                            <div class="text-xs text-slate-500">{{ $e->issued_date->format('d M') }} · {{ collect([$e->certificate, $e->destination, $e->ir_na])->filter()->implode(' · ') }}</div>
+                            <div class="text-xs text-slate-500">{{ $e->issued_date->format('d M') }} · {{ collect([$e->certificate, $e->destination, $e->ir_na, $e->sets > 1 ? $e->sets.' sets' : null])->filter()->implode(' · ') }}</div>
                             <div class="text-xs text-slate-500">{{ collect(['Ref '.$e->reference_no => $e->reference_no, 'Inv '.$e->invoice_number => $e->invoice_number, 'Mail by '.$e->mail_by => $e->mail_by])->filter()->keys()->implode(' · ') }}</div>
                             @if ($mode !== 'party')<div class="text-xs text-brand-600">Bill to {{ $e->client->name }}</div>@endif
                         </div>
@@ -55,7 +55,7 @@
                         <td class="font-medium text-slate-900">{{ $e->party_name }}</td>
                         <td class="whitespace-nowrap">{{ $e->reference_no }}</td>
                         <td class="whitespace-nowrap">{{ $e->invoice_number }}</td>
-                        <td>{{ $e->ir_na }}</td>
+                        <td>{{ $e->ir_na }}@if ($e->sets > 1) · {{ $e->sets }} sets @endif @if ($e->quotation_id)<a href="{{ route('quotations.show', $e->quotation_id) }}" class="ml-1 text-xs text-emerald-700 hover:underline" title="Amount from quotation">Quote</a>@endif</td>
                         <td>{{ $e->destination }}</td>
                         <td>{{ $e->certificate }}</td>
                         @unless ($staffView)

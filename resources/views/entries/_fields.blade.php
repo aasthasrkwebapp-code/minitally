@@ -1,5 +1,5 @@
 {{-- Shared entry fields. $name(field) gives the input name, $val(field) the current value. --}}
-<div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+<div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4" data-entry-fields data-rate-url="{{ route('quotations.rate') }}">
     <div class="sm:col-span-2">
         <label class="label">Party name *</label>
         <input name="{{ $name('party_name') }}" value="{{ $val('party_name') }}" list="dl-party_name" class="input" autocomplete="off">
@@ -8,8 +8,17 @@
     <div><label class="label">Invoice number</label><input name="{{ $name('invoice_number') }}" value="{{ $val('invoice_number') }}" class="input"></div>
     <div><label class="label">IR/NA</label><input name="{{ $name('ir_na') }}" value="{{ $val('ir_na') }}" list="dl-ir_na" class="input"></div>
     <div><label class="label">Destination</label><input name="{{ $name('destination') }}" value="{{ $val('destination') }}" list="dl-destination" class="input"></div>
-    <div class="sm:col-span-2"><label class="label">Certificate</label><input name="{{ $name('certificate') }}" value="{{ $val('certificate') }}" list="dl-certificate" class="input"></div>
-    <div><label class="label">Amount (₹) *</label><input name="{{ $name('amount') }}" value="{{ $val('amount') }}" type="number" step="0.01" min="0" inputmode="decimal" class="input"></div>
+    <div><label class="label">Certificate</label><input name="{{ $name('certificate') }}" value="{{ $val('certificate') }}" list="dl-certificate" class="input"></div>
+    <div>
+        <label class="label">Sets</label>
+        <select name="{{ $name('sets') }}" class="input">
+            @foreach (App\Models\Quotation::SETS as $n)<option value="{{ $n }}" @selected((int) ($val('sets') ?: 1) === $n)>{{ $n }} set{{ $n > 1 ? 's' : '' }}</option>@endforeach
+        </select>
+    </div>
+    <div>
+        <label class="label">Amount (₹) *</label><input name="{{ $name('amount') }}" value="{{ $val('amount') }}" type="number" step="0.01" min="0" inputmode="decimal" class="input">
+        <p class="mt-1 hidden text-xs text-emerald-700" data-quote-hint></p>
+    </div>
     <div><label class="label">Transaction amount (₹)</label><input name="{{ $name('transaction_amount') }}" value="{{ $val('transaction_amount') }}" type="number" step="0.01" min="0" inputmode="decimal" class="input"></div>
     <div class="{{ $mode === 'manual' ? '' : 'sm:col-span-2' }}"><label class="label">Mail by{{ $mode === 'mail_by' ? ' (bill goes to this exporter) *' : '' }}</label><input name="{{ $name('mail_by') }}" value="{{ $val('mail_by') }}" list="dl-mail_by" class="input"></div>
     @if ($mode === 'manual')

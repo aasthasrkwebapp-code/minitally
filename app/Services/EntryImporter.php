@@ -18,6 +18,7 @@ class EntryImporter
         'ir_na' => '/^(ir\s*\/\s*na|ir\/na|irna)/',
         'destination' => '/^(destination|country)/',
         'certificate' => '/^cert/',
+        'sets' => '/^(sets?|no\.?\s*of\s*sets?)\.?$/',
         'amount' => '/^(amount|amt|fees?)\.?$/',
         'transaction_amount' => '/^(transaction|txn)\s*(amount|amt)/',
         'mail_by' => '/^mail\s*by/',
@@ -65,6 +66,7 @@ class EntryImporter
                 'ir_na' => $get('ir_na') ?: null,
                 'destination' => $get('destination') ?: null,
                 'certificate' => $get('certificate') ?: null,
+                'sets' => (int) $get('sets') ?: 1,
                 'amount' => $amount,
                 'transaction_amount' => isset($map['transaction_amount']) && $get('transaction_amount') !== '' ? Sheet::money($get('transaction_amount')) : null,
                 'mail_by' => $get('mail_by') ?: null,
@@ -96,7 +98,7 @@ class EntryImporter
                 continue;
             }
 
-            Entry::create($data + ['client_id' => $clientId]);
+            Entry::create(Entry::applyQuotedRate($data, $clientId) + ['client_id' => $clientId]);
             $imported++;
         }
 

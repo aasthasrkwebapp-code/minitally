@@ -19,6 +19,7 @@ class EntryController extends Controller
         'ir_na' => ['nullable', 'string', 'max:20'],
         'destination' => ['nullable', 'string', 'max:100'],
         'certificate' => ['nullable', 'string', 'max:255'],
+        'sets' => ['nullable', 'integer', 'in:1,2,3'],
         'amount' => ['nullable', 'numeric', 'min:0'],
         'transaction_amount' => ['nullable', 'numeric', 'min:0'],
         'mail_by' => ['nullable', 'string', 'max:255'],
@@ -65,15 +66,22 @@ class EntryController extends Controller
             if (blank($row['party_name'] ?? null) && blank($row['amount'] ?? null)) {
                 continue;
             }
-            if (blank($row['party_name'] ?? null) || blank($row['amount'] ?? null)) {
-                throw ValidationException::withMessages(["rows.$i.party_name" => 'Row '.($i + 1).': party name and amount are needed.']);
+            if (blank($row['party_name'] ?? null)) {
+                throw ValidationException::withMessages(["rows.$i.party_name" => 'Row '.($i + 1).': party name is needed.']);
             }
             $row['issued_date'] = $data['issued_date'];
-            $clientId = Entry::resolveClientId($row);
+            $clientId = Entry::resolveClientId($row, create: false) ?? (filled($row['amount'] ?? null) ? Entry::resolveClientId($row) : null);
+            if (! $clientId && blank($row['amount'] ?? null)) {
+                throw ValidationException::withMessages(["rows.$i.amount" => 'Row '.($i + 1).': amount is needed (no accepted quotation found for this exporter).']);
+            }
             if (! $clientId) {
                 throw ValidationException::withMessages(["rows.$i.client_id" => 'Row '.($i + 1).': choose who to bill.']);
             }
-            Entry::create(collect($row)->only(Entry::FIELDS)->all() + ['client_id' => $clientId]);
+            $row = Entry::applyQuotedRate($row, $clientId);
+            if (blank($row['amount'] ?? null)) {
+                throw ValidationException::withMessages(["rows.$i.amount" => 'Row '.($i + 1).': amount is needed (no matching rate in an accepted quotation).']);
+            }
+            Entry::create(collect($row)->only([...Entry::FIELDS, 'quotation_id'])->all() + ['client_id' => $clientId]);
             $saved++;
         }
 
@@ -90,16 +98,19 @@ class EntryController extends Controller
     {
         $data = $request->validate(['issued_date' => ['required', 'date']] + self::ROW_RULES + [
             'party_name' => ['required', 'string', 'max:255'],
-            'amount' => ['required', 'numeric', 'min:0'],
         ]);
         $clientId = Entry::resolveClientId($data + ['client_id' => $entry->client_id]);
+        $data = Entry::applyQuotedRate($data, $clientId);
+        if (blank($data['amount'] ?? null)) {
+            return back()->withInput()->withErrors(['amount' => 'Amount is needed (no matching rate in an accepted quotation).']);
+        }
 
         $invoice = $entry->invoice;
         if ($invoice && ($clientId !== $entry->client_id || substr($data['issued_date'], 0, 7) !== $invoice->period)) {
             return back()->withInput()->withErrors(['party_name' => 'This entry is already billed in '.$invoice->number.'. Delete that bill first to move the entry to another exporter or month.']);
         }
 
-        $entry->update(collect($data)->only(Entry::FIELDS)->all() + ['client_id' => $clientId]);
+        $entry->update(collect($data)->only([...Entry::FIELDS, 'quotation_id'])->all() + ['client_id' => $clientId]);
         if ($invoice) {
             app(InvoiceService::class)->refreshTotal($invoice);
         }

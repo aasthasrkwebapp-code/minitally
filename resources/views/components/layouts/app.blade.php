@@ -1,6 +1,7 @@
 @php
     $nav = [
         ['dashboard', 'Dashboard', 'home', 'dashboard'],
+        ['quotations.index', 'Quotations', 'edit', 'quotations.*'],
         ['entries.index', 'Daily entries', 'list', 'entries.*'],
         ['billing.index', 'Month-end billing', 'send', 'billing.*'],
         ['invoices.index', 'Bills', 'bill', 'invoices.*'],
