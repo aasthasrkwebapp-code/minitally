@@ -37,6 +37,10 @@
     .badge-partial { @apply bg-amber-100 text-amber-800; }
     .badge-unpaid { @apply bg-red-100 text-red-700; }
     .badge-muted { @apply bg-slate-100 text-slate-600; }
+    .badge-draft { @apply bg-slate-100 text-slate-600; }
+    .badge-sent { @apply bg-sky-100 text-sky-800; }
+    .badge-accepted { @apply bg-emerald-100 text-emerald-800; }
+    .badge-rejected { @apply bg-red-100 text-red-700; }
     .nav-link { @apply flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-brand-100 hover:bg-white/10 hover:text-white; }
     .nav-link.active { @apply bg-white/15 text-white; }
 }

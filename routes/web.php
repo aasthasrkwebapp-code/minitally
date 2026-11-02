@@ -10,6 +10,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\OutstandingController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PublicInvoiceController;
+use App\Http\Controllers\QuotationController;
 use App\Http\Controllers\SettingController;
 use Illuminate\Support\Facades\Route;
 
@@ -31,6 +32,12 @@ Route::middleware('auth')->group(function () {
     // Shown as "Exporters"; route names stay clients.* and old /clients links still work
     Route::resource('exporters', ClientController::class)->names('clients')->parameters(['exporters' => 'client']);
     Route::get('clients/{path?}', fn (?string $path = null) => redirect('/exporters'.($path ? '/'.$path : '')))->where('path', '.*');
+
+    // Quotations: accepted rates fill the Amount on daily entries
+    Route::get('quotations/rate', [QuotationController::class, 'rate'])->name('quotations.rate');
+    Route::get('quotations/{quotation}/pdf', [QuotationController::class, 'pdf'])->name('quotations.pdf');
+    Route::post('quotations/{quotation}/status', [QuotationController::class, 'status'])->name('quotations.status');
+    Route::resource('quotations', QuotationController::class);
 
     Route::get('entries/import', [EntryController::class, 'importForm'])->name('entries.import');
     Route::post('entries/import', [EntryController::class, 'import'])->name('entries.import.store');

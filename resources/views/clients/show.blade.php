@@ -2,6 +2,7 @@
 <x-layouts.app :title="$client->name">
     <x-page-header :title="$client->name" :subtitle="collect([$client->contact_person, $client->email, $client->whatsapp])->filter()->implode(' · ')">
         <a href="{{ route('clients.edit', $client) }}" class="btn btn-secondary"><x-icon name="edit" class="size-4" />Edit</a>
+        <a href="{{ route('quotations.create', ['client_id' => $client->id]) }}" class="btn btn-secondary"><x-icon name="plus" class="size-4" />New quotation</a>
         <a href="{{ route('payments.create', ['client_id' => $client->id]) }}" class="btn btn-secondary"><x-icon name="rupee" class="size-4" />Add payment</a>
         @if ($due > 0)
             <form method="POST" action="{{ route('outstanding.email', $client) }}">@csrf<button class="btn btn-secondary" data-busy="Sending..."><x-icon name="mail" class="size-4" />Email reminder</button></form>

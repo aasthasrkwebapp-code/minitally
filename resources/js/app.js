@@ -74,6 +74,48 @@ document.addEventListener('change', (e) => {
     }
 });
 
+// Daily entries: fill Amount from the exporter's accepted quotation (certificate + IR/NA + sets).
+// A typed amount is never overwritten; only an empty or earlier auto-filled one.
+const entryField = (box, f) => box.querySelector(`[name="${f}"], [name$="[${f}]"]`);
+const fillQuotedRate = async (box) => {
+    const amount = entryField(box, 'amount');
+    const hint = box.querySelector('[data-quote-hint]');
+    if (!amount || (amount.value !== '' && amount.dataset.auto !== '1')) return;
+    const params = new URLSearchParams();
+    ['party_name', 'mail_by', 'client_id', 'certificate', 'ir_na', 'sets'].forEach((f) => {
+        const el = entryField(box, f);
+        if (el) params.set(f, el.value);
+    });
+    params.set('issued_date', document.querySelector('[name="issued_date"]')?.value || '');
+    if (!params.get('certificate')) return;
+    try {
+        const res = await fetch(`${box.dataset.rateUrl}?${params}`, { headers: { Accept: 'application/json' } });
+        const quote = res.ok ? await res.json() : null;
+        if (quote) {
+            amount.value = quote.rate;
+            amount.dataset.auto = '1';
+            if (hint) {
+                hint.textContent = `From quotation ${quote.number}`;
+                hint.classList.remove('hidden');
+            }
+        } else if (amount.dataset.auto === '1') {
+            amount.value = '';
+            delete amount.dataset.auto;
+            hint?.classList.add('hidden');
+        }
+    } catch {}
+};
+document.addEventListener('change', (e) => {
+    const box = e.target.closest('[data-entry-fields]');
+    if (!box) return;
+    if (e.target === entryField(box, 'amount')) {
+        delete e.target.dataset.auto;
+        box.querySelector('[data-quote-hint]')?.classList.add('hidden');
+        return;
+    }
+    fillQuotedRate(box);
+});
+
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
 }
