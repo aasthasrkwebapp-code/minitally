@@ -36,6 +36,11 @@ document.addEventListener('click', (e) => {
     }
 });
 
+// Escape closes the slide-in menu on phones and tablets
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') document.getElementById('mobile-menu')?.classList.add('hidden');
+});
+
 document.addEventListener('submit', (e) => {
     const form = e.target;
     if (form.dataset.confirm && !confirm(form.dataset.confirm)) {
