@@ -32,6 +32,11 @@
     .table th { @apply bg-slate-50 px-3 py-2.5 text-left text-xs font-semibold tracking-wide text-slate-600 uppercase; }
     .table td { @apply px-3 py-2.5 align-top text-slate-700; }
     .table tbody tr { @apply hover:bg-slate-50; }
+    /* Phones and tablets: keep each cell on one line and let the table scroll sideways */
+    .table-scroll th, .table-scroll td { @apply whitespace-nowrap lg:whitespace-normal; }
+    /* Wide tables with many columns: tighter cells */
+    .table-compact { @apply text-xs 2xl:text-sm; }
+    .table-compact th, .table-compact td { @apply px-1.5 2xl:px-3; }
     .badge { @apply inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium; }
     .badge-paid { @apply bg-emerald-100 text-emerald-800; }
     .badge-partial { @apply bg-amber-100 text-amber-800; }
