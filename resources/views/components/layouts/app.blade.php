@@ -63,7 +63,7 @@
         @unless ($isStaff)<a href="{{ route('entries.create') }}" class="btn btn-primary btn-sm"><x-icon name="plus" class="size-4" />Entry</a>@endunless
     </header>
 
-    <main class="mx-auto max-w-7xl px-4 pb-28 pt-5 sm:px-6 lg:px-8 lg:pb-10 lg:pt-8">
+    <main class="mx-auto max-w-7xl 2xl:max-w-screen-2xl px-4 pb-28 pt-5 sm:px-6 lg:px-8 lg:pb-10 lg:pt-8">
         @if (session('ok'))
             <div class="mb-4 flex items-start gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"><x-icon name="check" class="mt-0.5 size-4 shrink-0" /><div>{{ session('ok') }}</div></div>
         @endif
